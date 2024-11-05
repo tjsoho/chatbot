@@ -1,4 +1,4 @@
-import { Toast } from 'react-hot-toast';
+import { toast as hotToast, Toast } from 'react-hot-toast';
 
 interface ButtonConfig {
   label: string;
@@ -11,6 +11,13 @@ interface CustomToastProps {
   message: string;
   buttons: ButtonConfig[];
 }
+
+// Toast helper function
+const toast = ({ message, buttons }: Omit<CustomToastProps, 't'>) => {
+  return hotToast.custom((t) => (
+    <CustomToast t={t} message={message} buttons={buttons} />
+  ));
+};
 
 export default function CustomToast({ t, message, buttons }: CustomToastProps) {
   const getButtonStyles = (variant: string) => {
@@ -54,4 +61,6 @@ export default function CustomToast({ t, message, buttons }: CustomToastProps) {
       </div>
     </div>
   );
-} 
+}
+
+export { toast }; 

@@ -22,6 +22,7 @@ import ChatToggleButton from "./ChatToggleButton";
 import MenuBar from "./MenuBar";
 import ChatInput from './ChatInput';
 import '@/styles/scrollbar.css';
+import { toast } from '@/components/Toast/CustomToast';
 
 /*********************************************************************
                             TYPES
@@ -75,6 +76,15 @@ function ChatWindow() {
   const chatInputRef = useRef<HTMLInputElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("chat");
+  const [hasSubmittedDetails, setHasSubmittedDetails] = useState(false);
+  const [hasSubmittedMobile, setHasSubmittedMobile] = useState(false);
+  const [hasRatedBefore, setHasRatedBefore] = useState(() => {
+    return localStorage.getItem('hasRatedChat') === 'true';
+  });
+
+  // Add at the top of your component, remove these when done developing
+  const DEVELOPMENT_MODE = true; // Toggle this when needed
+  const [showRatingModalDev, setShowRatingModalDev] = useState(false);
 
   /*********************************************************************
                             USE EFFECTS
@@ -98,6 +108,28 @@ function ChatWindow() {
     };
 
     fetchBotConfig();
+  }, []);
+
+  useEffect(() => {
+    const lastActivity = localStorage.getItem('lastChatActivity');
+    const savedDetails = localStorage.getItem('userDetails');
+    
+    if (lastActivity && savedDetails) {
+      const timeSinceLastActivity = Date.now() - parseInt(lastActivity);
+      if (timeSinceLastActivity < 30 * 60 * 1000) { // 30 minutes
+        setHasSubmittedDetails(true);
+        setUserDetails(JSON.parse(savedDetails));
+        setMessages(prev => [...prev, {
+          text: "Welcome back! Continuing your conversation...",
+          isUser: false
+        }]);
+      } else {
+        // Clear expired session
+        localStorage.removeItem('userDetails');
+        localStorage.removeItem('lastChatActivity');
+        localStorage.removeItem('chatMessages');
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -137,6 +169,13 @@ function ChatWindow() {
     }
   }, [isLoading, messages, formStep]);
 
+  useEffect(() => {
+    const hasRated = localStorage.getItem('hasRatedChat');
+    if (hasRated) {
+      setHasRatedBefore(true);
+    }
+  }, []);
+
   /*********************************************************************
                           EVENT HANDLERS
   *********************************************************************/
@@ -170,38 +209,40 @@ function ChatWindow() {
 
   const handleMobileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!userDetails.mobile) {
-      alert("Please enter your mobile number");
-      return;
-    }
-
-    const welcomeMessage = {
-      text: `Great! How can I help you today?`,
-      isUser: false,
-    };
+    const mobile = userDetails.mobile; // Get mobile from userDetails
 
     try {
+      if (!mobile) {
+        alert("Please enter your mobile number");
+        return;
+      }
+
+      const welcomeMessage = {
+        text: `Great! How can I help you today?`,
+        isUser: false,
+      };
+
       if (chatId) {
         // Update existing chat with mobile number and welcome message
         const chatRef = doc(db, "chats", chatId);
         await updateDoc(chatRef, {
-          "userDetails.mobile": userDetails.mobile, // Add this line to update mobile
+          "userDetails.mobile": mobile,
           messages: arrayUnion(welcomeMessage),
           lastUpdated: new Date(),
         });
-      } else {
-        // Create new chat if none exists
-        const newChatId = await createNewChat(welcomeMessage);
-        if (newChatId) {
-          setChatId(newChatId);
-        }
       }
 
       // Update UI
       setFormStep("chat");
       setMessages((prev) => [...prev, welcomeMessage]);
+      setHasSubmittedMobile(true);
+      
+      // Save to localStorage
+      localStorage.setItem('userDetails', JSON.stringify(userDetails));
+      localStorage.setItem('lastChatActivity', Date.now().toString());
+
     } catch (error) {
-      console.error("Error in mobile submit:", error);
+      console.error("Error submitting mobile:", error);
       alert("There was an error starting the chat. Please try again.");
     }
   };
@@ -310,32 +351,44 @@ function ChatWindow() {
     try {
       if (chatId) {
         const chatRef = doc(db, "chats", chatId);
-
-        // Create update object
-        const updateData: any = {
-          status: "closed",
+        await updateDoc(chatRef, {
           rating,
-          closedAt: new Date(),
-        };
-
-        // Only add feedback if it exists and isn't empty
-        if (feedback?.trim()) {
-          updateData.feedback = feedback;
-        }
-
-        await updateDoc(chatRef, updateData);
+          feedback: feedback || '',
+          closedAt: new Date()
+        });
       }
+
+      // Set has rated in localStorage and state
+      localStorage.setItem('hasRatedChat', 'true');
+      setHasRatedBefore(true);
+      
+      // Close immediately
       setShowRatingModal(false);
-      // Optional: Add a thank you message
-      setMessages((prev) => [
-        ...prev,
-        {
-          text: "Thank you for your feedback! Have a great day!",
-          isUser: false,
-        },
-      ]);
+      setIsOpen(false);
+
+      toast({
+        message: "Thank you for your feedback!",
+        buttons: [
+          {
+            label: "OK",
+            onClick: () => {},
+            variant: "primary"
+          }
+        ]
+      });
+
     } catch (error) {
-      console.error("Error submitting rating:", error);
+      console.error('Error saving rating:', error);
+      toast({
+        message: "Could not save your feedback. Please try again.",
+        buttons: [
+          {
+            label: "OK",
+            onClick: () => {},
+            variant: "danger"
+          }
+        ]
+      });
     }
   };
 
@@ -390,6 +443,19 @@ function ChatWindow() {
     }
   };
 
+  const handleToggleChat = () => {
+    if (isOpen && hasSubmittedMobile) {
+      setShowRatingModal(true);
+    } else {
+      setIsOpen(!isOpen);
+    }
+  };
+
+  const handleAlreadyRated = () => {
+    setShowRatingModal(false);
+    setIsOpen(false);
+  };
+
   /*********************************************************************
                             RENDER
   *********************************************************************/
@@ -399,7 +465,19 @@ function ChatWindow() {
 
   return (
     <>
-      <ChatToggleButton isOpen={isOpen} onClick={() => setIsOpen(!isOpen)} />
+      {DEVELOPMENT_MODE && (
+        <button
+          onClick={() => setShowRatingModalDev(true)}
+          className="fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded"
+        >
+          Show Rating Modal
+        </button>
+      )}
+
+      <ChatToggleButton 
+        isOpen={isOpen} 
+        onClick={handleToggleChat} 
+      />
 
       {isOpen && (
         <div className="chat-window absolute bottom-16 right-0 w-[470px] h-[700px] bg-gradient-to-b from-[#00BF63] to-white rounded-2xl shadow-xl border overflow-hidden flex flex-col">
@@ -456,14 +534,6 @@ function ChatWindow() {
                 inputRef={chatInputRef}
               />
             )}
-
-            {showRatingModal && (
-              <RatingModal
-                isOpen={showRatingModal}
-                onClose={() => setShowRatingModal(false)}
-                onSubmit={handleRatingSubmit}
-              />
-            )}
           </div>
 
           {formStep === 'chat' && (
@@ -481,6 +551,23 @@ function ChatWindow() {
           />
 
         </div>
+      )}
+
+      {(showRatingModal || (DEVELOPMENT_MODE && showRatingModalDev)) && (
+        <RatingModal
+          isOpen={showRatingModal || showRatingModalDev}
+          onClose={() => {
+            setShowRatingModal(false);
+            setShowRatingModalDev(false);
+          }}
+          onSubmit={handleRatingSubmit}
+          hasRatedBefore={hasRatedBefore}
+          onAlreadyRated={() => {
+            setShowRatingModal(false);
+            setShowRatingModalDev(false);
+            setIsOpen(false);
+          }}
+        />
       )}
     </>
   );
