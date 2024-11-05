@@ -6,6 +6,8 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { toast } from 'react-hot-toast';
 import CustomToast from '@/components/Toast/CustomToast';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { storage } from '@/lib/firebase';
 
 /*********************************************************************
                             INTERFACES
@@ -25,6 +27,8 @@ interface BotConfig {
   signUpUrl: string;
   botGoal: string;
   welcomeMessage: string;
+  logoUrl: string;
+  profilePhotoUrl: string;
 }
 
 const defaultConfig: BotConfig = {
@@ -36,7 +40,45 @@ const defaultConfig: BotConfig = {
   contactUrl: '',
   signUpUrl: '',
   botGoal: '',
-  welcomeMessage: ''
+  welcomeMessage: '',
+  logoUrl: '/images/logo1.png',
+  profilePhotoUrl: '/images/profile.png',
+};
+
+/*********************************************************************
+                        HELPER FUNCTIONS
+*********************************************************************/
+const uploadImage = async (file: File, path: string): Promise<string> => {
+  try {
+    // Verify storage is available
+    if (!storage) {
+      throw new Error('Firebase Storage is not initialized');
+    }
+
+    console.log('Starting upload for:', path, 'Storage:', storage); // Debug log
+    const storageRef = ref(storage, path);
+    
+    if (!storageRef) {
+      throw new Error('Failed to create storage reference');
+    }
+
+    const snapshot = await uploadBytes(storageRef, file);
+    console.log('Upload successful:', snapshot); // Debug log
+    
+    const url = await getDownloadURL(snapshot.ref);
+    console.log('Download URL:', url); // Debug log
+    
+    return url;
+  } catch (error) {
+    console.error('Upload error details:', {
+      error,
+      storageInitialized: !!storage,
+      filePath: path,
+      fileName: file.name,
+      fileSize: file.size
+    });
+    throw error;
+  }
 };
 
 /*********************************************************************
@@ -170,6 +212,58 @@ export default function BotConfiguration() {
     }));
   };
 
+  const handleImageUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+    type: 'logo' | 'profile'
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsSaving(true);
+    try {
+      const path = `images/${type}/${Date.now()}_${file.name}`;
+      const url = await uploadImage(file, path);
+      
+      setConfig(prev => ({
+        ...prev,
+        [`${type}Url`]: url
+      }));
+
+      toast.custom((t) => (
+        <CustomToast
+          t={t}
+          message="Image uploaded successfully!"
+          buttons={[
+            {
+              label: 'Close',
+              onClick: () => toast.dismiss(t.id),
+              variant: 'primary'
+            }
+          ]}
+        />
+      ));
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      console.error('Error uploading image:', error);
+      
+      toast.custom((t) => (
+        <CustomToast
+          t={t}
+          message={`Failed to upload image: ${errorMessage}`}
+          buttons={[
+            {
+              label: 'Dismiss',
+              onClick: () => toast.dismiss(t.id),
+              variant: 'danger'
+            }
+          ]}
+        />
+      ));
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   /*********************************************************************
                             RENDER
   *********************************************************************/
@@ -285,6 +379,62 @@ export default function BotConfiguration() {
                 className="w-full p-2 border rounded-md text-black"
                 placeholder="Response when bot can't answer"
               />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              {/* Logo Upload */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-black mb-1">
+                  Company Logo
+                </label>
+                <div className="flex items-center space-x-4">
+                  {config.logoUrl && (
+                    <img 
+                      src={config.logoUrl} 
+                      alt="Company Logo" 
+                      className="w-12 h-12 object-contain"
+                    />
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageUpload(e, 'logo')}
+                    className="block w-full text-sm text-gray-500
+                      file:mr-4 file:py-2 file:px-4
+                      file:rounded-full file:border-0
+                      file:text-sm file:font-semibold
+                      file:bg-green-50 file:text-green-700
+                      hover:file:bg-green-100"
+                  />
+                </div>
+              </div>
+
+              {/* Profile Photo Upload */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-black mb-1">
+                  Bot Profile Photo
+                </label>
+                <div className="flex items-center space-x-4">
+                  {config.profilePhotoUrl && (
+                    <img 
+                      src={config.profilePhotoUrl} 
+                      alt="Bot Profile" 
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageUpload(e, 'profile')}
+                    className="block w-full text-sm text-gray-500
+                      file:mr-4 file:py-2 file:px-4
+                      file:rounded-full file:border-0
+                      file:text-sm file:font-semibold
+                      file:bg-green-50 file:text-green-700
+                      hover:file:bg-green-100"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         ) : (

@@ -20,7 +20,6 @@ const ChatComponent = () => {
         if (configSnap.exists()) {
           const config = configSnap.data() as BotConfig;
           setBotConfig(config);
-          // Initialize with welcome message if it exists
           if (config.welcomeMessage) {
             setMessages([{
               role: 'assistant',
@@ -46,7 +45,6 @@ const ChatComponent = () => {
     const systemPrompt = createSystemPrompt(botConfig);
     
     try {
-      // Add user message to chat
       setMessages(prev => [...prev, {
         role: 'user',
         content: message,
@@ -67,7 +65,6 @@ const ChatComponent = () => {
       
       const data = await response.json();
       
-      // Add bot response to chat
       setMessages(prev => [...prev, {
         role: 'assistant',
         content: data.message,
@@ -76,7 +73,6 @@ const ChatComponent = () => {
       }]);
     } catch (error) {
       console.error('Error:', error);
-      // Handle error - maybe add an error message to the chat
       setMessages(prev => [...prev, {
         role: 'assistant',
         content: botConfig.fallbackResponse || "I'm sorry, I encountered an error. Please try again.",
@@ -116,7 +112,7 @@ const ChatComponent = () => {
       </div>
       
       {/* Message Input */}
-      <div className="border-t p-4">
+      <div className="border-t p-4 ">
         <form
           onSubmit={(e) => {
             e.preventDefault();

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { FaStar } from 'react-icons/fa';
 
 interface RatingModalProps {
   isOpen: boolean;
@@ -7,60 +6,56 @@ interface RatingModalProps {
   onSubmit: (rating: number, feedback?: string) => void;
 }
 
-export const RatingModal = ({ isOpen, onClose, onSubmit }: RatingModalProps) => {
+export const RatingModal: React.FC<RatingModalProps> = ({ isOpen, onClose, onSubmit }) => {
   const [rating, setRating] = useState(0);
-  const [hover, setHover] = useState(0);
   const [feedback, setFeedback] = useState('');
 
-  if (!isOpen) return null;
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(rating, feedback);
+  };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
-        <h2 className="text-xl font-bold mb-4">How was your experience?</h2>
+    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+      <div className="bg-white p-6 rounded-lg w-[90%] max-w-md">
+        <h3 className="text-lg font-semibold mb-4">How was your experience?</h3>
         
+        {/* Star Rating */}
         <div className="flex justify-center space-x-2 mb-4">
           {[1, 2, 3, 4, 5].map((star) => (
             <button
               key={star}
-              className="focus:outline-none"
               onClick={() => setRating(star)}
-              onMouseEnter={() => setHover(star)}
-              onMouseLeave={() => setHover(0)}
+              className={`text-2xl ${
+                star <= rating ? 'text-yellow-400' : 'text-gray-300'
+              }`}
             >
-              <FaStar
-                size={32}
-                className={`transition-colors ${
-                  (hover || rating) >= star
-                    ? 'text-yellow-400'
-                    : 'text-gray-300'
-                }`}
-              />
+              ★
             </button>
           ))}
         </div>
 
+        {/* Feedback Text Area */}
         <textarea
-          className="w-full p-2 border rounded mb-4 text-black"
-          placeholder="Any additional feedback? (optional)"
           value={feedback}
           onChange={(e) => setFeedback(e.target.value)}
+          placeholder="Any additional feedback? (optional)"
+          className="w-full p-2 border rounded-md mb-4 focus:ring-2 focus:ring-[#00BF63] focus:border-transparent"
           rows={3}
         />
 
+        {/* Buttons */}
         <div className="flex justify-end space-x-2">
           <button
             onClick={onClose}
-            className="px-4 py-2 border rounded hover:bg-gray-100"
+            className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md"
           >
             Cancel
           </button>
           <button
-            onClick={() => onSubmit(rating, feedback)}
-            disabled={!rating}
-            className={`px-4 py-2 rounded text-white ${
-              rating ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-300'
-            }`}
+            onClick={handleSubmit}
+            disabled={rating === 0}
+            className="px-4 py-2 bg-[#00BF63] text-white rounded-md hover:bg-[#00A854] disabled:opacity-50"
           >
             Submit
           </button>

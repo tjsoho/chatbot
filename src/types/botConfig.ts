@@ -13,6 +13,8 @@ export interface BotConfig {
   signUpUrl: string;
   botGoal: string;
   welcomeMessage: string;
+  logoUrl: string;
+  profilePhotoUrl: string;
 }
 
 export interface Message {

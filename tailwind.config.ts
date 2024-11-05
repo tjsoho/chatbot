@@ -1,19 +1,41 @@
-import type { Config } from "tailwindcss";
-
-const config: Config = {
+/** @type {import('tailwindcss').Config} */
+module.exports = {
   content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/**/*.{js,jsx,ts,tsx}",
+    "./components/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        'brand-cream': '#FFE7C3',
+        'brand-logo': '#C1FF72',
+        'brand-green': '#00BF63',
+        'brand-green-light': '#7ED957',
+        'brand-green-dark': '#004B27',
+        'brand-orange': '#FF914D',
+        'brand-orange-light': '#FFBD59',
+        'brand-orange-dark': '#572700',
+        'brand-yellow': '#FFD874',
+        
+      },
+      fontFamily: {
+        'Archivo': ['Archivo Black', 'sans-serif'],
+        'Quicksand': ['Quicksand', 'sans-serif'],
+        'Script': ['Script'],
+        'Black': ['Black Han Sans', 'sans-serif'],
+      },
+      transitionProperty: {
+        'width': 'width',
+      },
+      transitionDuration: {
+        '1300': '1300ms',
+      },
+      transitionTimingFunction: {
+        'ease-in-out': 'cubic-bezier(0.4, 0, 0.2, 1)',
       },
     },
   },
-  plugins: [],
-};
-export default config;
+  plugins: [
+    require('tailwind-scrollbar-hide')
+  ],
+}

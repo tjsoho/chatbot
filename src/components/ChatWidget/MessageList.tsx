@@ -17,15 +17,15 @@ export const MessageList = ({ messages, isLoading }: MessageListProps) => {
   }, [messages]);
 
   return (
-    <div className="h-96 overflow-y-auto mb-4">
+    <div className="contain overflow-y-auto mb-4 text-brand-green-dark p-2">
       {messages.map((message, index) => (
         <div
           key={index}
           className={`mb-4 ${message.isUser ? 'text-right' : 'text-left'}`}
         >
           <div
-            className={`inline-block p-4 rounded-lg ${
-              message.isUser ? 'bg-blue-500 text-white' : 'bg-gray-100 text-black'
+            className={`inline-block p-4 rounded-xl ${
+              message.isUser ? 'bg-brand-green text-white' : 'bg-gray-100 text-black'
             }`}
           >
             {message.text}
