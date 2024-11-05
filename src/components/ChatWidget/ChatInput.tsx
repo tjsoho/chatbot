@@ -2,7 +2,7 @@
                             IMPORTS
 *********************************************************************/
 import React, { useState, RefObject } from "react";
-import { IoSend, IoClose } from "react-icons/io5";
+import { IoSend } from "react-icons/io5";
 
 /*********************************************************************
                             TYPES
@@ -16,23 +16,19 @@ interface ChatInputProps {
 /*********************************************************************
                         COMPONENT DEFINITION
 *********************************************************************/
-const ChatInput: React.FC<ChatInputProps> = ({
-  onSendMessage,
-  onClose,
-  inputRef,
-}) => {
+const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, inputRef }) => {
   const [message, setMessage] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (message.trim()) {
-      console.log('Sending message:', message); // Debug log
+      console.log("Sending message:", message); // Debug log
       onSendMessage(message.trim());
       setMessage("");
     }
   };
 
-/*********************************************************************
+  /*********************************************************************
                         USER INPUT
 *********************************************************************/
 

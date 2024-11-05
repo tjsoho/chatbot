@@ -3,7 +3,7 @@
 /*********************************************************************
                             IMPORTS
 *********************************************************************/
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   doc,
   collection,
@@ -20,9 +20,9 @@ import { ChatInterface } from "./ChatInterface";
 import { RatingModal } from "./RatingModal";
 import ChatToggleButton from "./ChatToggleButton";
 import MenuBar from "./MenuBar";
-import ChatInput from './ChatInput';
-import '@/styles/scrollbar.css';
-import { toast } from '@/components/Toast/CustomToast';
+import ChatInput from "./ChatInput";
+import { toast } from "@/components/Toast/CustomToast";
+import './ChatWindow.css';
 
 /*********************************************************************
                             TYPES
@@ -48,7 +48,6 @@ function ChatWindow() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [chatId, setChatId] = useState<string | null>(null);
   const [formStep, setFormStep] = useState<FormStep>("initial");
@@ -71,16 +70,14 @@ function ChatWindow() {
     profilePhotoUrl: "",
   });
   const [showRatingModal, setShowRatingModal] = useState(false);
-  const [rating, setRating] = useState<number>(0);
+  const [hasRatedBefore, setHasRatedBefore] = useState(() => {
+    return localStorage.getItem("hasRatedChat") === "true";
+  });
   const mobileInputRef = useRef<HTMLInputElement>(null);
   const chatInputRef = useRef<HTMLInputElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("chat");
-  const [hasSubmittedDetails, setHasSubmittedDetails] = useState(false);
   const [hasSubmittedMobile, setHasSubmittedMobile] = useState(false);
-  const [hasRatedBefore, setHasRatedBefore] = useState(() => {
-    return localStorage.getItem('hasRatedChat') === 'true';
-  });
 
   /*********************************************************************
                             USE EFFECTS
@@ -107,23 +104,27 @@ function ChatWindow() {
   }, []);
 
   useEffect(() => {
-    const lastActivity = localStorage.getItem('lastChatActivity');
-    const savedDetails = localStorage.getItem('userDetails');
-    
+    const lastActivity = localStorage.getItem("lastChatActivity");
+    const savedDetails = localStorage.getItem("userDetails");
+
     if (lastActivity && savedDetails) {
       const timeSinceLastActivity = Date.now() - parseInt(lastActivity);
-      if (timeSinceLastActivity < 30 * 60 * 1000) { // 30 minutes
-        setHasSubmittedDetails(true);
+      if (timeSinceLastActivity < 30 * 60 * 1000) {
+        // 30 minutes
+        setHasSubmittedMobile(true);
         setUserDetails(JSON.parse(savedDetails));
-        setMessages(prev => [...prev, {
-          text: "Welcome back! Continuing your conversation...",
-          isUser: false
-        }]);
+        setMessages((prev) => [
+          ...prev,
+          {
+            text: "Welcome back! Continuing your conversation...",
+            isUser: false,
+          },
+        ]);
       } else {
         // Clear expired session
-        localStorage.removeItem('userDetails');
-        localStorage.removeItem('lastChatActivity');
-        localStorage.removeItem('chatMessages');
+        localStorage.removeItem("userDetails");
+        localStorage.removeItem("lastChatActivity");
+        localStorage.removeItem("chatMessages");
       }
     }
   }, []);
@@ -166,7 +167,7 @@ function ChatWindow() {
   }, [isLoading, messages, formStep]);
 
   useEffect(() => {
-    const hasRated = localStorage.getItem('hasRatedChat');
+    const hasRated = localStorage.getItem("hasRatedChat");
     if (hasRated) {
       setHasRatedBefore(true);
     }
@@ -232,87 +233,64 @@ function ChatWindow() {
       setFormStep("chat");
       setMessages((prev) => [...prev, welcomeMessage]);
       setHasSubmittedMobile(true);
-      
-      // Save to localStorage
-      localStorage.setItem('userDetails', JSON.stringify(userDetails));
-      localStorage.setItem('lastChatActivity', Date.now().toString());
 
+      // Save to localStorage
+      localStorage.setItem("userDetails", JSON.stringify(userDetails));
+      localStorage.setItem("lastChatActivity", Date.now().toString());
     } catch (error) {
       console.error("Error submitting mobile:", error);
       alert("There was an error starting the chat. Please try again.");
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim() || isLoading || !chatId) return;
+  const handleSendMessage = async (message: string) => {
+    console.log("Message received in ChatWindow:", message); // Debug log
 
-    const newUserMessage = { text: input, isUser: true };
-    setMessages((prev) => [...prev, newUserMessage]);
-    setInput("");
+    // Create new message object
+    const newMessage: Message = {
+      text: message,
+      isUser: true,
+    };
+
+    // Update UI immediately
+    setMessages((prev) => [...prev, newMessage]);
     setIsLoading(true);
-    console.log("Loading started:", isLoading);
 
     try {
-      // Update chat with user message
-      const chatRef = doc(db, "chats", chatId);
-      await updateDoc(chatRef, {
-        messages: arrayUnion(newUserMessage),
-        lastUpdated: new Date(),
-      });
-
-      // Get AI response
+      // Send to API
       const response = await fetch("/api/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: input,
-          userDetails,
-          botConfig,
-          chatId,
-        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message }),
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error("API response was not ok");
       }
 
       const data = await response.json();
-      const aiMessage = {
+
+      // Add AI response to messages
+      const aiResponse: Message = {
         text: data.message,
         isUser: false,
       };
 
-      // Update UI and database with AI response
-      setMessages((prev) => [...prev, aiMessage]);
-      await updateDoc(chatRef, {
-        messages: arrayUnion(aiMessage),
-        lastUpdated: new Date(),
-      });
+      setMessages((prev) => [...prev, aiResponse]);
     } catch (error) {
-      console.error("Chat Error:", error);
-      const fallbackMessage = {
-        text:
-          botConfig.fallbackResponse ||
-          "Sorry, there was an error processing your request.",
+      console.error("Error in handleSendMessage:", error);
+
+      // Add error message to chat
+      const errorMessage: Message = {
+        text: "Sorry, I couldn't process that request. Please try again.",
         isUser: false,
       };
 
-      setMessages((prev) => [...prev, fallbackMessage]);
-
-      if (chatId) {
-        const chatRef = doc(db, "chats", chatId);
-        await updateDoc(chatRef, {
-          messages: arrayUnion(fallbackMessage),
-        });
-      }
+      setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
-      console.log("Loading ended:", isLoading);
-      // Refocus the input field after the response
-      if (chatInputRef.current) {
-        chatInputRef.current.focus();
-      }
     }
   };
 
@@ -339,25 +317,21 @@ function ChatWindow() {
     }
   };
 
-  const handleCloseChat = () => {
-    setShowRatingModal(true);
-  };
-
   const handleRatingSubmit = async (rating: number, feedback?: string) => {
     try {
       if (chatId) {
         const chatRef = doc(db, "chats", chatId);
         await updateDoc(chatRef, {
           rating,
-          feedback: feedback || '',
-          closedAt: new Date()
+          feedback: feedback || "",
+          closedAt: new Date(),
         });
       }
 
       // Set has rated in localStorage and state
-      localStorage.setItem('hasRatedChat', 'true');
+      localStorage.setItem("hasRatedChat", "true");
       setHasRatedBefore(true);
-      
+
       // Close immediately
       setShowRatingModal(false);
       setIsOpen(false);
@@ -368,74 +342,22 @@ function ChatWindow() {
           {
             label: "OK",
             onClick: () => {},
-            variant: "primary"
-          }
-        ]
+            variant: "primary",
+          },
+        ],
       });
-
     } catch (error) {
-      console.error('Error saving rating:', error);
+      console.error("Error saving rating:", error);
       toast({
         message: "Could not save your feedback. Please try again.",
         buttons: [
           {
             label: "OK",
             onClick: () => {},
-            variant: "danger"
-          }
-        ]
+            variant: "danger",
+          },
+        ],
       });
-    }
-  };
-
-  const handleSendMessage = async (message: string) => {
-    console.log('Message received in ChatWindow:', message); // Debug log
-
-    // Create new message object
-    const newMessage: Message = {
-      text: message,
-      isUser: true
-    };
-
-    // Update UI immediately
-    setMessages(prev => [...prev, newMessage]);
-    setIsLoading(true);
-
-    try {
-      // Send to API
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message }),
-      });
-
-      if (!response.ok) {
-        throw new Error('API response was not ok');
-      }
-
-      const data = await response.json();
-
-      // Add AI response to messages
-      const aiResponse: Message = {
-        text: data.message,
-        isUser: false
-      };
-
-      setMessages(prev => [...prev, aiResponse]);
-    } catch (error) {
-      console.error('Error in handleSendMessage:', error);
-      
-      // Add error message to chat
-      const errorMessage: Message = {
-        text: "Sorry, I couldn't process that request. Please try again.",
-        isUser: false
-      };
-      
-      setMessages(prev => [...prev, errorMessage]);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -447,11 +369,6 @@ function ChatWindow() {
     }
   };
 
-  const handleAlreadyRated = () => {
-    setShowRatingModal(false);
-    setIsOpen(false);
-  };
-
   /*********************************************************************
                             RENDER
   *********************************************************************/
@@ -461,36 +378,35 @@ function ChatWindow() {
 
   return (
     <>
-      <ChatToggleButton 
-        isOpen={isOpen} 
-        onClick={handleToggleChat} 
-      />
+      <ChatToggleButton isOpen={isOpen} onClick={handleToggleChat} />
 
       {isOpen && (
-        <div className="chat-window absolute bottom-16 right-0 w-[470px] h-[700px] bg-gradient-to-b from-[#00BF63] to-white rounded-2xl shadow-xl border overflow-hidden flex flex-col">
-          <div className="flex justify-between items-center px-4 py-2">
-            <div className="w-20 h-20">
-              <img
-                src="/images/logo1.png"
-                alt="Logo"
-                className="w-full h-full object-contain"
-              />
+        <div className="fixed inset-0 md:inset-auto md:bottom-16 md:right-0 w-full md:w-[470px] h-full md:h-[700px] bg-gradient-to-b from-[#00BF63] to-white rounded-none md:rounded-2xl shadow-xl border overflow-hidden flex flex-col z-50">
+          <div className="chat-header">
+            <div className="flex justify-between items-center px-4 py-2">
+              <div className="w-20 h-20">
+                <img
+                  src="/images/logo1.png"
+                  alt="Logo"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <div className="w-20 h-20 rounded-full overflow-hidden">
+                <img
+                  src="/images/profile.png"
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              </div>
             </div>
-            <div className="w-20 h-20 rounded-full overflow-hidden">
-              <img
-                src="/images/profile.png"
-                alt="Profile"
-                className="w-full h-full object-cover"
-              />
+            <div className="p-4">
+              <h2 className="text-3xl font-semibold mb-4 text-white leading-tight">
+                Hi there 👋 <br></br>
+                Welcome to {botConfig.businessName}
+              </h2>
             </div>
           </div>
-          <div className="p-4">
-            <h2 className="text-3xl font-semibold mb-4 text-white leading-tight">
-              Hi there 👋 <br></br>
-              Welcome to {botConfig.businessName}
-            </h2>
-          </div>
-          <div className="flex-1 overflow-y-auto p-2">
+          <div className="flex-1 overflow-y-auto chat-window-content">
             {formStep === "initial" ? (
               <InitialForm
                 botConfig={botConfig}
@@ -513,30 +429,25 @@ function ChatWindow() {
             ) : (
               <ChatInterface
                 messages={messages}
-                input={input}
                 isLoading={isLoading}
-                onInputChange={setInput}
-                onSubmit={handleSubmit}
-                onClose={handleCloseChat}
-                inputRef={chatInputRef}
               />
             )}
           </div>
-
-          {formStep === 'chat' && (
-            <ChatInput 
+          {formStep === "chat" && (
+            <ChatInput
               onSendMessage={handleSendMessage}
               onClose={() => setIsOpen(false)}
               inputRef={chatInputRef}
             />
           )}
-          <MenuBar
-            activeTab={activeTab}
-            signUpUrl={botConfig.signUpUrl}
-            contactUrl={botConfig.contactUrl}
-            onTabChange={setActiveTab}
-          />
-
+          <div className="chat-footer">
+            <MenuBar
+              activeTab={activeTab}
+              signUpUrl={botConfig.signUpUrl}
+              contactUrl={botConfig.contactUrl}
+              onTabChange={setActiveTab}
+            />
+          </div>
         </div>
       )}
 

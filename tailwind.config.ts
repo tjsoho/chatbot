@@ -1,5 +1,8 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+import type { Config } from 'tailwindcss'
+import plugin from 'tailwindcss/plugin'
+
+const config: Config = {
   content: [
     "./src/**/*.{js,jsx,ts,tsx}",
     "./components/**/*.{js,ts,jsx,tsx}",
@@ -39,13 +42,14 @@ module.exports = {
     },
   },
   plugins: [
-    require('tailwind-scrollbar-hide'),
-    function({ addUtilities }) {
+    plugin(function({ addUtilities }: { addUtilities: (utilities: Record<string, Record<string, string>>) => void }) {
       addUtilities({
         '.text-stroke-gray-700': {
           '-webkit-text-stroke': '0.5px #6B7280',
         },
       });
-    }
+    })
   ],
 }
+
+export default config;
