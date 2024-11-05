@@ -8,6 +8,7 @@ import { toast } from 'react-hot-toast';
 import CustomToast from '@/components/Toast/CustomToast';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '@/lib/firebase';
+import Image from 'next/image';
 
 /*********************************************************************
                             INTERFACES
@@ -389,10 +390,12 @@ export default function BotConfiguration() {
                 </label>
                 <div className="flex items-center space-x-4">
                   {config.logoUrl && (
-                    <img 
-                      src={config.logoUrl} 
-                      alt="Company Logo" 
-                      className="w-12 h-12 object-contain"
+                    <Image
+                      src={config.logoUrl}
+                      alt="Company Logo"
+                      width={40}
+                      height={40}
+                      className="w-16 h-16 md:w-20 md:h-20"
                     />
                   )}
                   <input
@@ -416,10 +419,12 @@ export default function BotConfiguration() {
                 </label>
                 <div className="flex items-center space-x-4">
                   {config.profilePhotoUrl && (
-                    <img 
-                      src={config.profilePhotoUrl} 
-                      alt="Bot Profile" 
-                      className="w-12 h-12 rounded-full object-cover"
+                    <Image
+                      src={config.profilePhotoUrl}
+                      alt="Bot Profile"
+                      width={40}
+                      height={40}
+                      className="w-16 h-16 md:w-20 md:h-20"
                     />
                   )}
                   <input
