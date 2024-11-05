@@ -22,7 +22,7 @@ import ChatToggleButton from "./ChatToggleButton";
 import MenuBar from "./MenuBar";
 import ChatInput from "./ChatInput";
 import { toast } from "@/components/Toast/CustomToast";
-import './ChatWindow.css';
+import "./ChatWindow.css";
 
 /*********************************************************************
                             TYPES
@@ -381,17 +381,17 @@ function ChatWindow() {
       <ChatToggleButton isOpen={isOpen} onClick={handleToggleChat} />
 
       {isOpen && (
-        <div className="fixed inset-0 md:inset-auto md:bottom-16 md:right-0 w-full md:w-[470px] h-full md:h-[700px] bg-gradient-to-b from-[#00BF63] to-white rounded-none md:rounded-2xl shadow-xl border overflow-hidden flex flex-col z-50">
+        <div className="fixed inset-0 md:inset-auto md:bottom-24 md:right-0 w-full md:w-[470px] h-[87%] md:h-[700px] bg-gradient-to-b from-[#00BF63] to-white rounded-none md:rounded-2xl shadow-xl border overflow-hidden flex flex-col z-50">
           <div className="chat-header">
             <div className="flex justify-between items-center px-4 py-2">
-              <div className="w-20 h-20">
+              <div className="w-16 h-16 md:w-20 md:h-20">
                 <img
                   src="/images/logo1.png"
                   alt="Logo"
                   className="w-full h-full object-contain"
                 />
               </div>
-              <div className="w-20 h-20 rounded-full overflow-hidden">
+              <div className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden">
                 <img
                   src="/images/profile.png"
                   alt="Profile"
@@ -399,14 +399,14 @@ function ChatWindow() {
                 />
               </div>
             </div>
-            <div className="p-4">
+            <div className="px-4 md:p-4">
               <h2 className="text-3xl font-semibold mb-4 text-white leading-tight">
                 Hi there 👋 <br></br>
                 Welcome to {botConfig.businessName}
               </h2>
             </div>
           </div>
-          <div className="flex-1 overflow-y-auto chat-window-content">
+          <div className="flex-1 overflow-y-auto chat-window-content relative">
             {formStep === "initial" ? (
               <InitialForm
                 botConfig={botConfig}
@@ -427,18 +427,17 @@ function ChatWindow() {
                 inputRef={mobileInputRef}
               />
             ) : (
-              <ChatInterface
-                messages={messages}
-                isLoading={isLoading}
-              />
+              <ChatInterface messages={messages} isLoading={isLoading} />
             )}
           </div>
           {formStep === "chat" && (
-            <ChatInput
-              onSendMessage={handleSendMessage}
-              onClose={() => setIsOpen(false)}
-              inputRef={chatInputRef}
-            />
+            <div className="relative z-[51]">
+              <ChatInput
+                onSendMessage={handleSendMessage}
+                onClose={() => setIsOpen(false)}
+                inputRef={chatInputRef}
+              />
+            </div>
           )}
           <div className="chat-footer">
             <MenuBar
