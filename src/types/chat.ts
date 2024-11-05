@@ -1,4 +1,4 @@
-import { BotConfig } from './botConfig';
+
 
 export interface UserDetails {
   name: string;

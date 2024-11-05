@@ -24,7 +24,7 @@ import { FaStar } from "react-icons/fa";
 interface Message {
   text: string;
   isUser: boolean;
-  timestamp: any;
+  timestamp: Timestamp;
 }
 
 interface UserDetails {
@@ -37,7 +37,7 @@ interface Chat {
   id: string;
   messages: Message[];
   userDetails: UserDetails;
-  createdAt: any;
+  createdAt: Timestamp;
   startTime: string;
   endTime: string | null;
   duration: number | null;
@@ -49,6 +49,11 @@ interface Chat {
   };
   status?: "active" | "closed";
   closedAt?: Date;
+}
+
+// Add this interface to define the shape of a Timestamp-like object
+interface TimestampLike {
+  toDate: () => Date;
 }
 
 /*********************************************************************
@@ -95,7 +100,15 @@ export default function ChatHistory() {
     }
   };
 
-  const formatTimestamp = (timestamp: Timestamp | string | any) => {
+  // Update the type guard to use unknown instead of any
+  function isFirebaseTimestamp(timestamp: unknown): timestamp is Timestamp {
+    return timestamp !== null && 
+           typeof timestamp === 'object' && 
+           'toDate' in (timestamp as TimestampLike) &&
+           typeof (timestamp as TimestampLike).toDate === 'function';
+  }
+
+  const formatTimestamp = (timestamp: Timestamp | string | Date | null) => {
     if (!timestamp) return "";
 
     const options: Intl.DateTimeFormatOptions = {
@@ -109,7 +122,7 @@ export default function ChatHistory() {
     };
 
     // Handle Firestore Timestamp
-    if (timestamp && typeof timestamp.toDate === "function") {
+    if (isFirebaseTimestamp(timestamp)) {
       return new Intl.DateTimeFormat("en-AU", options).format(
         timestamp.toDate()
       );
@@ -120,6 +133,11 @@ export default function ChatHistory() {
       return new Intl.DateTimeFormat("en-AU", options).format(
         new Date(timestamp)
       );
+    }
+
+    // Handle Date object
+    if (timestamp instanceof Date) {
+      return new Intl.DateTimeFormat("en-AU", options).format(timestamp);
     }
 
     return "";

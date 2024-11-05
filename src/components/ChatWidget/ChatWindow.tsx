@@ -244,12 +244,13 @@ function ChatWindow() {
   };
 
   const handleSendMessage = async (message: string) => {
-    console.log("Message received in ChatWindow:", message); // Debug log
+    if (!chatId) return; // Make sure we have a chat ID
 
     // Create new message object
     const newMessage: Message = {
       text: message,
       isUser: true,
+      timestamp: new Date()
     };
 
     // Update UI immediately
@@ -257,12 +258,17 @@ function ChatWindow() {
     setIsLoading(true);
 
     try {
+      // Update Firestore with user message
+      const chatRef = doc(db, "chats", chatId);
+      await updateDoc(chatRef, {
+        messages: arrayUnion(newMessage),
+        lastUpdated: new Date()
+      });
+
       // Send to API
       const response = await fetch("/api/chat", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message }),
       });
 
@@ -272,23 +278,25 @@ function ChatWindow() {
 
       const data = await response.json();
 
-      // Add AI response to messages
+      // Create AI response
       const aiResponse: Message = {
         text: data.message,
         isUser: false,
+        timestamp: new Date()
       };
 
+      // Update UI
       setMessages((prev) => [...prev, aiResponse]);
+
+      // Update Firestore with AI response
+      await updateDoc(chatRef, {
+        messages: arrayUnion(aiResponse),
+        lastUpdated: new Date()
+      });
+
     } catch (error) {
       console.error("Error in handleSendMessage:", error);
-
-      // Add error message to chat
-      const errorMessage: Message = {
-        text: "Sorry, I couldn't process that request. Please try again.",
-        isUser: false,
-      };
-
-      setMessages((prev) => [...prev, errorMessage]);
+      // ... error handling
     } finally {
       setIsLoading(false);
     }

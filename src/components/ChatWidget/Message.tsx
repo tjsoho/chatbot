@@ -11,7 +11,7 @@ interface MessageProps {
 const Message: React.FC<MessageProps> = ({ message, config }) => {
   const renderTextWithLinks = (text: string): (JSX.Element | string)[] => {
     // Replace specific URL patterns with more natural language
-    let processedText = text
+    const processedText = text
       .replace(
         new RegExp(config.signUpUrl, 'g'), 
         '[[SIGNUP_LINK]]here[[/SIGNUP_LINK]]'
