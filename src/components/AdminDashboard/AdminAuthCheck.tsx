@@ -6,7 +6,6 @@
 import { useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
-import AdminLogin from './AdminLogin';
 import { useRouter } from 'next/navigation';
 
 /*********************************************************************

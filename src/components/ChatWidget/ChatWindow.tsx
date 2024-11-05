@@ -23,6 +23,7 @@ import MenuBar from "./MenuBar";
 import ChatInput from "./ChatInput";
 import { toast } from "@/components/Toast/CustomToast";
 import "./ChatWindow.css";
+import Image from 'next/image';
 
 /*********************************************************************
                             TYPES
@@ -393,16 +394,20 @@ function ChatWindow() {
           <div className="chat-header">
             <div className="flex justify-between items-center px-4 py-2">
               <div className="w-16 h-16 md:w-20 md:h-20">
-                <img
+                <Image
                   src="/images/logo1.png"
                   alt="Logo"
+                  width={80}
+                  height={80}
                   className="w-full h-full object-contain"
                 />
               </div>
               <div className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden">
-                <img
+                <Image
                   src="/images/profile.png"
                   alt="Profile"
+                  width={80}
+                  height={80}
                   className="w-full h-full object-cover"
                 />
               </div>

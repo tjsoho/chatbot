@@ -51,7 +51,7 @@ export default function ConversationList({
     }
 
     fetchConversations();
-  }, []); // Empty dependency array means this runs once on mount
+  }, [setError, setIsLoading]);
 
   return (
     <div className="h-full">
