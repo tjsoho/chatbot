@@ -82,10 +82,6 @@ function ChatWindow() {
     return localStorage.getItem('hasRatedChat') === 'true';
   });
 
-  // Add at the top of your component, remove these when done developing
-  const DEVELOPMENT_MODE = true; // Toggle this when needed
-  const [showRatingModalDev, setShowRatingModalDev] = useState(false);
-
   /*********************************************************************
                             USE EFFECTS
   *********************************************************************/
@@ -465,15 +461,6 @@ function ChatWindow() {
 
   return (
     <>
-      {DEVELOPMENT_MODE && (
-        <button
-          onClick={() => setShowRatingModalDev(true)}
-          className="fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded"
-        >
-          Show Rating Modal
-        </button>
-      )}
-
       <ChatToggleButton 
         isOpen={isOpen} 
         onClick={handleToggleChat} 
@@ -553,18 +540,14 @@ function ChatWindow() {
         </div>
       )}
 
-      {(showRatingModal || (DEVELOPMENT_MODE && showRatingModalDev)) && (
+      {showRatingModal && hasSubmittedMobile && (
         <RatingModal
-          isOpen={showRatingModal || showRatingModalDev}
-          onClose={() => {
-            setShowRatingModal(false);
-            setShowRatingModalDev(false);
-          }}
+          isOpen={showRatingModal}
+          onClose={() => setShowRatingModal(false)}
           onSubmit={handleRatingSubmit}
           hasRatedBefore={hasRatedBefore}
           onAlreadyRated={() => {
             setShowRatingModal(false);
-            setShowRatingModalDev(false);
             setIsOpen(false);
           }}
         />

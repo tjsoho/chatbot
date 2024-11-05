@@ -33,9 +33,19 @@ module.exports = {
       transitionTimingFunction: {
         'ease-in-out': 'cubic-bezier(0.4, 0, 0.2, 1)',
       },
+      textStroke: {
+        'gray-700': '1px #6B7280',
+      },
     },
   },
   plugins: [
-    require('tailwind-scrollbar-hide')
+    require('tailwind-scrollbar-hide'),
+    function({ addUtilities }) {
+      addUtilities({
+        '.text-stroke-gray-700': {
+          '-webkit-text-stroke': '0.5px #6B7280',
+        },
+      });
+    }
   ],
 }
