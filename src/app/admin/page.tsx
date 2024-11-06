@@ -30,10 +30,14 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      if (firebaseUser && localStorage.getItem("adminAuth") === "true") {
+      if (firebaseUser) {
+        const isAdmin = typeof window !== 'undefined' ? 
+          localStorage.getItem("adminAuth") === "true" : 
+          false;
+        
         setUser({
           email: firebaseUser.email,
-          isAdmin: true,
+          isAdmin: isAdmin,
         });
       } else {
         setUser(null);
