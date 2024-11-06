@@ -1,6 +1,8 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
   async headers() {
+    console.log('Setting CORS headers for widget.js');
     return [
       {
         source: '/widget.js',
@@ -16,12 +18,21 @@ const nextConfig = {
           {
             key: 'Content-Type',
             value: 'application/javascript'
+          },
+          {
+            key: 'Access-Control-Allow-Methods',
+            value: 'GET, OPTIONS'
+          },
+          {
+            key: 'Access-Control-Allow-Headers',
+            value: '*'
           }
         ]
       }
     ]
   },
   async rewrites() {
+    console.log('Processing rewrite for widget.js');
     return [
       {
         source: '/widget.js',
