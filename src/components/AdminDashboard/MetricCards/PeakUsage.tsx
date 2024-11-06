@@ -21,6 +21,16 @@ export default function PeakUsage() {
     busiestTimeSlot: ''
   });
 
+  // Reusable style variables
+  const gradientTextStyle = "bg-gradient-to-r from-gray-400 via-gray-300 to-gray-200 text-transparent bg-clip-text";
+  const cardTitleStyle = `text-2xl font-bold mb-2 ${gradientTextStyle}`;
+  const cardContainerStyle = "bg-zinc-900 rounded-[20px] p-6 group hover:bg-black/90 transition-all shadow-[0_0_10px_#0ff,0_0_20px_#f0f]";
+  const iconStyle = {
+    className: "w-10 h-10",
+    strokeWidth: 1.5,
+    style: { stroke: 'url(#blue-pink-gradient)' }
+  };
+
   useEffect(() => {
     const fetchPeakUsage = async () => {
       try {
@@ -80,35 +90,47 @@ export default function PeakUsage() {
   }, []);
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className={cardContainerStyle}>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold">Peak Usage</h3>
-        <Clock className="text-blue-500" size={24} />
+        <div>
+          <h3 className={cardTitleStyle}>Peak Usage</h3>
+        </div>
+        <div className="ml-auto">
+          <Clock {...iconStyle} />
+          <svg width="0" height="0">
+            <defs>
+              <linearGradient id="blue-pink-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#0ff" />
+                <stop offset="100%" stopColor="#f0f" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
       </div>
 
       {loading ? (
         <div className="animate-pulse space-y-3">
-          <div className="h-6 bg-gray-200 rounded w-3/4"></div>
-          <div className="h-6 bg-gray-200 rounded w-2/3"></div>
+          <div className="h-6 bg-gray-800 rounded w-3/4"></div>
+          <div className="h-6 bg-gray-800 rounded w-2/3"></div>
         </div>
       ) : (
         <div className="space-y-4">
           <div>
             <div className="text-sm text-gray-500 mb-1">Busiest Day</div>
-            <div className="text-2xl font-bold text-blue-600">
+            <div className={`text-2xl font-bold ${gradientTextStyle}`}>
               {usageData.busiestDay}
             </div>
           </div>
           
           <div>
             <div className="text-sm text-gray-500 mb-1">Peak Hours</div>
-            <div className="text-2xl font-bold text-blue-600">
+            <div className={`text-2xl font-bold ${gradientTextStyle}`}>
               {usageData.busiestTimeSlot}
             </div>
           </div>
 
-          {/* Optional: Show distribution */}
-          <div className="pt-4 border-t">
+          {/* Daily Distribution */}
+          <div className="pt-4 border-t border-gray-800">
             <div className="text-xs text-gray-500 mb-2">Daily Distribution</div>
             <div className="grid grid-cols-7 gap-1">
               {DAYS.map((day) => (
