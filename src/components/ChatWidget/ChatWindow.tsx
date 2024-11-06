@@ -72,7 +72,10 @@ function ChatWindow() {
   });
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [hasRatedBefore, setHasRatedBefore] = useState(() => {
-    return localStorage.getItem("hasRatedChat") === "true";
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem("hasRatedChat") === "true";
+    }
+    return false;
   });
   const mobileInputRef = useRef<HTMLInputElement>(null);
   const chatInputRef = useRef<HTMLInputElement>(null);
@@ -105,13 +108,14 @@ function ChatWindow() {
   }, []);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+
     const lastActivity = localStorage.getItem("lastChatActivity");
     const savedDetails = localStorage.getItem("userDetails");
 
     if (lastActivity && savedDetails) {
       const timeSinceLastActivity = Date.now() - parseInt(lastActivity);
       if (timeSinceLastActivity < 30 * 60 * 1000) {
-        // 30 minutes
         setHasSubmittedMobile(true);
         setUserDetails(JSON.parse(savedDetails));
         setMessages((prev) => [
@@ -122,7 +126,6 @@ function ChatWindow() {
           },
         ]);
       } else {
-        // Clear expired session
         localStorage.removeItem("userDetails");
         localStorage.removeItem("lastChatActivity");
         localStorage.removeItem("chatMessages");
@@ -168,6 +171,8 @@ function ChatWindow() {
   }, [isLoading, messages, formStep]);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const hasRated = localStorage.getItem("hasRatedChat");
     if (hasRated) {
       setHasRatedBefore(true);
@@ -207,7 +212,7 @@ function ChatWindow() {
 
   const handleMobileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const mobile = userDetails.mobile; // Get mobile from userDetails
+    const mobile = userDetails.mobile;
 
     try {
       if (!mobile) {
@@ -235,9 +240,10 @@ function ChatWindow() {
       setMessages((prev) => [...prev, welcomeMessage]);
       setHasSubmittedMobile(true);
 
-      // Save to localStorage
-      localStorage.setItem("userDetails", JSON.stringify(userDetails));
-      localStorage.setItem("lastChatActivity", Date.now().toString());
+      if (typeof window !== 'undefined') {
+        localStorage.setItem("userDetails", JSON.stringify(userDetails));
+        localStorage.setItem("lastChatActivity", Date.now().toString());
+      }
     } catch (error) {
       console.error("Error submitting mobile:", error);
       alert("There was an error starting the chat. Please try again.");
@@ -337,8 +343,9 @@ function ChatWindow() {
         });
       }
 
-      // Set has rated in localStorage and state
-      localStorage.setItem("hasRatedChat", "true");
+      if (typeof window !== 'undefined') {
+        localStorage.setItem("hasRatedChat", "true");
+      }
       setHasRatedBefore(true);
 
       // Close immediately
