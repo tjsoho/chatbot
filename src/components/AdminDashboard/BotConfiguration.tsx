@@ -271,40 +271,38 @@ export default function BotConfiguration() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold mb-6 text-black">Bot Configuration</h1>
-      
+    <div className="space-y-6">
       {error && (
-        <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md">
+        <div className="mb-4 p-4 bg-red-500/10 text-red-400 rounded-md border border-red-500/20">
           {error}
         </div>
       )}
 
-      {/* Add Tab Navigation */}
-      <div className="mb-6 border-b">
+      {/* Tab Navigation */}
+      <div className="mb-6 border-b border-zinc-800">
         <div className="flex space-x-4">
           <button
             onClick={() => setActiveTab('general')}
-            className={`py-2 px-4 ${
+            className={`py-2 px-4 transition-all duration-300 ${
               activeTab === 'general'
-                ? 'border-b-2 border-blue-500 text-blue-500'
-                : 'text-gray-500'
+                ? 'border-b-2 border-cyan-500 text-cyan-400'
+                : 'text-gray-400 hover:text-gray-300'
             }`}
           >
             General Settings
           </button>
           <button
             onClick={() => setActiveTab('faqs')}
-            className={`py-2 px-4 ${
+            className={`py-2 px-4 transition-all duration-300 ${
               activeTab === 'faqs'
-                ? 'border-b-2 border-blue-500 text-blue-500'
-                : 'text-gray-500'
+                ? 'border-b-2 border-cyan-500 text-cyan-400'
+                : 'text-gray-400 hover:text-gray-300'
             }`}
           >
             FAQs
@@ -312,131 +310,150 @@ export default function BotConfiguration() {
         </div>
       </div>
 
-      <form onSubmit={(e) => { e.preventDefault(); handleSave(); }} className="space-y-6">
+      <form onSubmit={(e) => { e.preventDefault(); handleSave(); }} className="space-y-6 opacity-100">
         {activeTab === 'general' ? (
           // General Settings Tab
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-black mb-1">Bot Name</label>
+              <label className="block text-sm font-medium text-gray-300 mb-1">Bot Name</label>
               <input
                 type="text"
                 value={config.botName}
                 onChange={(e) => setConfig(prev => ({ ...prev, botName: e.target.value }))}
-                className="w-full p-2 border rounded-md text-black"
+                className="w-full p-2 bg-zinc-800/50 border border-zinc-700 rounded-md text-gray-200 
+                  placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 
+                  focus:border-cyan-500/50 transition-all duration-300"
                 placeholder="e.g., Sal"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-black mb-1">Business Name</label>
+              <label className="block text-sm font-medium text-gray-300 mb-1">Business Name</label>
               <input
                 type="text"
                 value={config.businessName}
                 onChange={(e) => setConfig(prev => ({ ...prev, businessName: e.target.value }))}
-                className="w-full p-2 border rounded-md text-black"
+                className="w-full p-2 bg-zinc-800/50 border border-zinc-700 rounded-md text-gray-200 
+                  placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 
+                  focus:border-cyan-500/50 transition-all duration-300"
                 placeholder="Your Business Name"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-black mb-1">Business Background</label>
+              <label className="block text-sm font-medium text-gray-300 mb-1">Business Background</label>
               <textarea
                 value={config.businessBackground}
                 onChange={(e) => setConfig(prev => ({ ...prev, businessBackground: e.target.value }))}
-                className="w-full p-2 border rounded-md text-black"
+                className="w-full p-2 bg-zinc-800/50 border border-zinc-700 rounded-md text-gray-200 
+                  placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 
+                  focus:border-cyan-500/50 transition-all duration-300 min-h-[100px]"
                 placeholder="Tell us about your business..."
                 rows={4}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-black mb-1">Welcome Message</label>
+              <label className="block text-sm font-medium text-gray-300 mb-1">Welcome Message</label>
               <input
                 type="text"
                 value={config.welcomeMessage}
                 onChange={(e) => setConfig(prev => ({ ...prev, welcomeMessage: e.target.value }))}
-                className="w-full p-2 border rounded-md text-black"
+                className="w-full p-2 bg-zinc-800/50 border border-zinc-700 rounded-md text-gray-200 
+                  placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 
+                  focus:border-cyan-500/50 transition-all duration-300"
                 placeholder="Welcome message for users..."
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-black mb-1">Bot Goal</label>
+              <label className="block text-sm font-medium text-gray-300 mb-1">Bot Goal</label>
               <input
                 type="text"
                 value={config.botGoal}
                 onChange={(e) => setConfig(prev => ({ ...prev, botGoal: e.target.value }))}
-                className="w-full p-2 border rounded-md text-black"
+                className="w-full p-2 bg-zinc-800/50 border border-zinc-700 rounded-md text-gray-200 
+                  placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 
+                  focus:border-cyan-500/50 transition-all duration-300"
                 placeholder="What is the bot's main purpose?"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-black mb-1">Fallback Response</label>
+              <label className="block text-sm font-medium text-gray-300 mb-1">Fallback Response</label>
               <input
                 type="text"
                 value={config.fallbackResponse}
                 onChange={(e) => setConfig(prev => ({ ...prev, fallbackResponse: e.target.value }))}
-                className="w-full p-2 border rounded-md text-black"
+                className="w-full p-2 bg-zinc-800/50 border border-zinc-700 rounded-md text-gray-200 
+                  placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 
+                  focus:border-cyan-500/50 transition-all duration-300"
                 placeholder="Response when bot can't answer"
               />
             </div>
 
+            {/* Image Upload Section */}
             <div className="grid grid-cols-2 gap-4">
               {/* Logo Upload */}
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-black mb-1">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   Company Logo
                 </label>
                 <div className="flex items-center space-x-4">
                   {config.logoUrl && (
-                    <Image
-                      src={config.logoUrl}
-                      alt="Company Logo"
-                      width={40}
-                      height={40}
-                      className="w-16 h-16 md:w-20 md:h-20"
-                    />
+                    <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-lg overflow-hidden border border-zinc-700 bg-zinc-800/50">
+                      <Image
+                        src={config.logoUrl}
+                        alt="Company Logo"
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
                   )}
                   <input
                     type="file"
                     accept="image/*"
                     onChange={(e) => handleImageUpload(e, 'logo')}
-                    className="block w-full text-sm text-gray-500
+                    className="block w-full text-sm text-gray-400
                       file:mr-4 file:py-2 file:px-4
-                      file:rounded-full file:border-0
-                      file:text-sm file:font-semibold
-                      file:bg-green-50 file:text-green-700
-                      hover:file:bg-green-100"
+                      file:rounded-md file:border-0
+                      file:text-sm file:font-medium
+                      file:bg-cyan-500/10 file:text-cyan-400
+                      hover:file:bg-cyan-500/20
+                      file:transition-all file:duration-300
+                      cursor-pointer"
                   />
                 </div>
               </div>
 
               {/* Profile Photo Upload */}
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-black mb-1">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   Bot Profile Photo
                 </label>
                 <div className="flex items-center space-x-4">
                   {config.profilePhotoUrl && (
-                    <Image
-                      src={config.profilePhotoUrl}
-                      alt="Bot Profile"
-                      width={40}
-                      height={40}
-                      className="w-16 h-16 md:w-20 md:h-20"
-                    />
+                    <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-lg overflow-hidden border border-zinc-700 bg-zinc-800/50">
+                      <Image
+                        src={config.profilePhotoUrl}
+                        alt="Bot Profile"
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
                   )}
                   <input
                     type="file"
                     accept="image/*"
                     onChange={(e) => handleImageUpload(e, 'profile')}
-                    className="block w-full text-sm text-gray-500
+                    className="block w-full text-sm text-gray-400
                       file:mr-4 file:py-2 file:px-4
-                      file:rounded-full file:border-0
-                      file:text-sm file:font-semibold
-                      file:bg-green-50 file:text-green-700
-                      hover:file:bg-green-100"
+                      file:rounded-md file:border-0
+                      file:text-sm file:font-medium
+                      file:bg-cyan-500/10 file:text-cyan-400
+                      hover:file:bg-cyan-500/20
+                      file:transition-all file:duration-300
+                      cursor-pointer"
                   />
                 </div>
               </div>
@@ -445,54 +462,79 @@ export default function BotConfiguration() {
         ) : (
           // FAQs Tab
           <div>
-            <label className="block text-sm font-medium text-black mb-2">FAQs</label>
             <div className="space-y-4">
               {config.faqs.map((faq, index) => (
-                <div key={index} className="flex gap-4">
-                  <div className="flex-1">
-                    <input
-                      type="text"
-                      value={faq.question}
-                      onChange={(e) => updateFAQ(index, 'question', e.target.value)}
-                      className="w-full p-2 border rounded-md text-black mb-2"
-                      placeholder="Question"
-                    />
-                    <textarea
-                      value={faq.answer}
-                      onChange={(e) => updateFAQ(index, 'answer', e.target.value)}
-                      className="w-full p-2 border rounded-md text-black"
-                      placeholder="Answer"
-                    />
+                <div 
+                  key={index} 
+                  className="p-4 bg-zinc-800/30 rounded-lg border border-zinc-700 hover:border-zinc-600 transition-all duration-300"
+                >
+                  <div className="flex justify-between items-start gap-4">
+                    <div className="flex-1 space-y-3">
+                      <input
+                        type="text"
+                        value={faq.question}
+                        onChange={(e) => updateFAQ(index, 'question', e.target.value)}
+                        className="w-full p-2 bg-zinc-800/50 border border-zinc-700 rounded-md text-gray-200 
+                          placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 
+                          focus:border-cyan-500/50 transition-all duration-300"
+                        placeholder="Question"
+                      />
+                      <textarea
+                        value={faq.answer}
+                        onChange={(e) => updateFAQ(index, 'answer', e.target.value)}
+                        className="w-full p-2 bg-zinc-800/50 border border-zinc-700 rounded-md text-gray-200 
+                          placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 
+                          focus:border-cyan-500/50 transition-all duration-300 min-h-[100px]"
+                        placeholder="Answer"
+                        rows={4}
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeFAQ(index)}
+                      className="text-red-400 hover:text-red-300 transition-colors duration-300 p-2 hover:bg-red-500/10 rounded-md"
+                    >
+                      Remove
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => removeFAQ(index)}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    Remove
-                  </button>
                 </div>
               ))}
+              
               <button
                 type="button"
                 onClick={addFAQ}
-                className="text-blue-500 hover:text-blue-700"
+                className="w-full p-3 border border-dashed border-zinc-700 rounded-lg text-gray-400 
+                  hover:text-cyan-400 hover:border-cyan-500/50 hover:bg-cyan-500/5
+                  transition-all duration-300 mt-4"
               >
-                Add FAQ
+                + Add FAQ
               </button>
             </div>
           </div>
         )}
 
-        <div className="flex justify-end">
+        {/* Save Button */}
+        <div className="flex justify-end pt-6 border-t border-zinc-800">
           <button
             type="submit"
             disabled={isSaving}
-            className={`px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 ${
-              isSaving ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
+            className={`px-6 py-2 bg-gradient-to-r from-cyan-500 to-cyan-400 
+              text-zinc-900 font-medium rounded-md
+              hover:from-cyan-400 hover:to-cyan-300
+              focus:outline-none focus:ring-2 focus:ring-cyan-500/50 
+              transition-all duration-300
+              disabled:opacity-50 disabled:cursor-not-allowed
+              disabled:hover:from-cyan-500 disabled:hover:to-cyan-400
+              ${isSaving ? 'animate-pulse' : ''}`}
           >
-            {isSaving ? 'Saving...' : 'Save Configuration'}
+            {isSaving ? (
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 border-2 border-zinc-900 border-t-transparent rounded-full animate-spin"></div>
+                <span>Saving...</span>
+              </div>
+            ) : (
+              'Save Configuration'
+            )}
           </button>
         </div>
       </form>
