@@ -152,6 +152,7 @@ export default function AdminDashboard() {
             <GenderDistribution />
           </div>
         </div>
+
         <NewsBanner />
       </main>
     </div>
