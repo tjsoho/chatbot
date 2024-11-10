@@ -11,27 +11,18 @@ export function middleware(request: NextRequest) {
     // Valid admin routes
     const validRoutes = [
       '/admin',
-      '/admin/dashboard',
       '/admin/chats',
       '/admin/config'
     ]
 
-    // If at root, redirect to admin dashboard
+    // If at root, redirect to admin page
     if (path === '/') {
-      return NextResponse.redirect(new URL('/admin/dashboard', request.url))
+      return NextResponse.redirect(new URL('/admin', request.url))
     }
 
     // If it's a valid admin route, let it through
     if (validRoutes.includes(path)) {
       return NextResponse.next()
-    }
-
-    // If path doesn't include /admin prefix, check if it's a valid route with prefix
-    if (!path.startsWith('/admin')) {
-      const pathWithPrefix = `/admin${path}`
-      if (validRoutes.includes(pathWithPrefix)) {
-        return NextResponse.rewrite(new URL(pathWithPrefix, request.url))
-      }
     }
 
     // For all other paths on admin subdomain, let them through
