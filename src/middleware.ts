@@ -2,29 +2,40 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
-  // Get hostname (e.g. admin.sloane.biz, chatbot-sigma-flax.vercel.app)
+  // Get hostname and path
   const hostname = request.headers.get('host')
   const path = request.nextUrl.pathname
 
-  // If it's the admin subdomain, handle admin routes
+  // If it's the admin subdomain
   if (hostname?.startsWith('admin.')) {
-    // List of valid admin routes
-    const validAdminRoutes = [
+    // Valid admin routes
+    const validRoutes = [
       '/admin',
       '/admin/dashboard',
       '/admin/chats',
-      '/admin/config',
-      // Add any other admin routes here
+      '/admin/config'
     ]
 
-    // Check if the requested path (minus /admin prefix) is valid
-    const requestedAdminPath = '/admin' + path
-    if (validAdminRoutes.includes(requestedAdminPath)) {
-      return NextResponse.rewrite(new URL(requestedAdminPath, request.url))
+    // If at root, redirect to admin dashboard
+    if (path === '/') {
+      return NextResponse.redirect(new URL('/admin/dashboard', request.url))
     }
 
-    // If not a valid admin route, could redirect to admin dashboard
-    return NextResponse.redirect(new URL('/admin/dashboard', request.url))
+    // If it's a valid admin route, let it through
+    if (validRoutes.includes(path)) {
+      return NextResponse.next()
+    }
+
+    // If path doesn't include /admin prefix, check if it's a valid route with prefix
+    if (!path.startsWith('/admin')) {
+      const pathWithPrefix = `/admin${path}`
+      if (validRoutes.includes(pathWithPrefix)) {
+        return NextResponse.rewrite(new URL(pathWithPrefix, request.url))
+      }
+    }
+
+    // For all other paths on admin subdomain, let them through
+    return NextResponse.next()
   }
 
   // For all other hostnames, serve the chat widget
@@ -33,14 +44,6 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public files (e.g., images, fonts)
-     */
     '/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)).*)',
   ],
 } 
