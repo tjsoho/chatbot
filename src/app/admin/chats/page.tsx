@@ -5,10 +5,8 @@ import AdminAuthCheck from '@/components/AdminDashboard/AdminAuthCheck';
 import Sidebar from '@/components/Sidebar/Sidebar';
 import NewsBanner from '@/components/NewsBanner/NewsBanner';
 import { MessageSquare } from 'lucide-react';
-import { useState, useEffect } from 'react';
 
 export default function ChatsPage() {
-  const [isWideScreen, setIsWideScreen] = useState(false);
 
   const gradientTextStyle = "bg-gradient-to-r from-gray-400 via-gray-300 to-gray-200 text-transparent bg-clip-text";
   const iconStyle = {
@@ -17,14 +15,7 @@ export default function ChatsPage() {
     style: { stroke: "url(#blue-pink-gradient)" },
   };
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsWideScreen(window.innerWidth > 1920);
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+
 
   return (
     <div className="flex h-screen bg-zinc-900">
