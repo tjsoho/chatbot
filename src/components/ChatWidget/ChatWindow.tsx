@@ -357,7 +357,9 @@ function ChatWindow() {
         buttons: [
           {
             label: "OK",
-            onClick: () => {},
+            onClick: () => {
+              document.querySelector('.toast-container')?.remove();
+            },
             variant: "primary",
           },
         ],
@@ -369,7 +371,9 @@ function ChatWindow() {
         buttons: [
           {
             label: "OK",
-            onClick: () => {},
+            onClick: () => {
+              document.querySelector('.toast-container')?.remove();
+            },
             variant: "danger",
           },
         ],
@@ -397,7 +401,7 @@ function ChatWindow() {
       <ChatToggleButton isOpen={isOpen} onClick={handleToggleChat} />
 
       {isOpen && (
-        <div className="fixed inset-0 md:inset-auto bottom-24 md:right-0 w-full md:w-[470px] h-[100%] md:h-[700px] bg-gradient-to-b from-[#00BF63] to-white rounded-2xl shadow-xl border overflow-hidden flex flex-col z-50">
+        <div className="fixed inset-0 md:inset-auto bottom-24 md:right-0 w-full md:w-[430px] h-[100%] md:h-[700px] bg-gradient-to-b from-[#00BF63] to-white rounded-2xl shadow-xl border overflow-hidden flex flex-col z-50">
           <div className="chat-header">
             <div className="flex justify-between items-center px-4 py-2">
               <div className="w-16 h-16 md:w-20 md:h-20">
@@ -408,6 +412,12 @@ function ChatWindow() {
                   height={80}
                   className="w-full h-full object-contain"
                 />
+              </div>
+              <div 
+                className="text-white -mt-8 hover:underline cursor-pointer" 
+                onClick={handleToggleChat}
+              >
+                <p>CLOSE</p>
               </div>
               <div className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden">
                 <Image
