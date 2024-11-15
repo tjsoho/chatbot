@@ -6,7 +6,7 @@
 
     // Create and append iframe
     const iframe = document.createElement('iframe');
-    iframe.src = 'https://chatbot-843foefd2-tjsohos-projects.vercel.app';
+    iframe.src = 'https://chatbot-sigma-flax.vercel.app';
     iframe.style.position = 'fixed';
     iframe.style.bottom = '20px';
     iframe.style.right = '20px';
