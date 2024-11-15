@@ -43,12 +43,12 @@ const ChatToggleButton: React.FC<ChatToggleButtonProps> = ({ isOpen, onClick }) 
       {/* Button with spinning border */}
       <div className="relative">
         {/* Spinning border */}
-        <div className={`absolute inset-0 rounded-full border-2 border-[#00A854] ${isOpen ? 'animate-spin' : ''}`}></div>
+        <div className={`absolute inset-0 rounded-full border-2 border-[#C1FF72] ${isOpen ? 'animate-spin' : ''}`}></div>
         
         {/* Main button */}
         <button
           onClick={onClick}
-          className="relative bg-[#00BF63] text-white p-4 rounded-full hover:bg-[#00A854] transition-colors duration-200 shadow-lg"
+          className="relative bg-[#00BF63] text-white p-4 rounded-full hover:bg-[#00A854] transition-colors duration-200 shadow-xl border-2 border-[#C1FF72]"
         >
           {isOpen ? (
             <svg
