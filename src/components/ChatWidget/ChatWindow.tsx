@@ -381,7 +381,13 @@ function ChatWindow() {
     }
   };
 
+  const sendMessageToParent = (message: string) => {
+    window.parent.postMessage(message, "*"); 
+  };
+
+
   const handleToggleChat = () => {
+    sendMessageToParent(isOpen ? "close" : "open"); 
     if (isOpen && hasSubmittedMobile) {
       setShowRatingModal(true);
     } else {
