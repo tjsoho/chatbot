@@ -16,6 +16,7 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import { MessageSquare, Settings } from "lucide-react";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import NewsBanner from "@/components/NewsBanner/NewsBanner";
+import WorldClock from "@/components/WorldClock/WorldClock";
 
 /*********************************************************************
                             INTERFACES
@@ -77,84 +78,87 @@ export default function AdminDashboard() {
     <div className="flex h-screen bg-zinc-900">
       <Sidebar />
 
-      <main className="flex-1 ml-20 2xl:ml-[10%] xl:ml-24 p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-8 flex space-x-8 items-baseline ">
-            <h1 className={`text-5xl font-bold mb-4 ${gradientTextStyle}`}>
+      <main className="flex-1 ml-20 2xl:ml-[10%] xl:ml-24 mr-20 2xl:mr-[10%] xl:mr-24 p-8">
+        <div className="h-full flex flex-col">
+          <div className="mb-6 flex space-x-8 items-baseline">
+            <h1 className={`text-5xl font-bold ${gradientTextStyle}`}>
               Admin Dashboard
             </h1>
             <p className="text-gray-500">Welcome, {user.email}</p>
           </div>
 
-          {/* All Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Chat Management Card */}
-            <div className={cardContainerStyle}>
-              <Link href="/admin/chats" className="block h-full">
-                <div className="flex flex-col items-center justify-center h-full text-center space-y-2">
-                  <MessageSquare {...iconStyle} />
-                  <svg width="0" height="0">
-                    <defs>
-                      <linearGradient
-                        id="blue-pink-gradient"
-                        x1="0%"
-                        y1="0%"
-                        x2="100%"
-                        y2="100%"
-                      >
-                        <stop offset="0%" stopColor="#0ff" />
-                        <stop offset="100%" stopColor="#f0f" />
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                  <div>
-                    <h2 className={cardTitleStyle}>View All Chats</h2>
-                    <p className="text-gray-500">
-                      View and manage user chat history
-                    </p>
-                  </div>
+          <div className="flex-1 flex items-center 2xl:justify-center">
+            <div className="">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-4">
+                <div className={cardContainerStyle}>
+                  <Link href="/admin/chats" className="block h-full">
+                    <div className="flex flex-col items-center justify-center h-full text-center space-y-2">
+                      <MessageSquare {...iconStyle} />
+                      <svg width="0" height="0">
+                        <defs>
+                          <linearGradient
+                            id="blue-pink-gradient"
+                            x1="0%"
+                            y1="0%"
+                            x2="100%"
+                            y2="100%"
+                          >
+                            <stop offset="0%" stopColor="#0ff" />
+                            <stop offset="100%" stopColor="#f0f" />
+                          </linearGradient>
+                        </defs>
+                      </svg>
+                      <div>
+                        <h2 className={cardTitleStyle}>View All Chats</h2>
+                        <p className="text-gray-500">
+                          View and manage user chat history
+                        </p>
+                      </div>
+                    </div>
+                  </Link>
                 </div>
-              </Link>
-            </div>
 
-            {/* Chatbot Configuration Card */}
-            <div className={cardContainerStyle}>
-              <Link href="/admin/config" className="block h-full">
-                <div className="flex flex-col items-center justify-center h-full text-center space-y-2">
-                  <Settings {...iconStyle} />
-                  <svg width="0" height="0">
-                    <defs>
-                      <linearGradient
-                        id="blue-pink-gradient"
-                        x1="0%"
-                        y1="0%"
-                        x2="100%"
-                        y2="100%"
-                      >
-                        <stop offset="0%" stopColor="#0ff" />
-                        <stop offset="100%" stopColor="#f0f" />
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                  <div>
-                    <h2 className={cardTitleStyle}>Chatbot Training</h2>
-                    <p className="text-gray-500">
-                      Configure AI chatbot settings and responses
-                    </p>
-                  </div>
+                <div className={cardContainerStyle}>
+                  <Link href="/admin/config" className="block h-full">
+                    <div className="flex flex-col items-center justify-center h-full text-center space-y-2">
+                      <Settings {...iconStyle} />
+                      <svg width="0" height="0">
+                        <defs>
+                          <linearGradient
+                            id="blue-pink-gradient"
+                            x1="0%"
+                            y1="0%"
+                            x2="100%"
+                            y2="100%"
+                          >
+                            <stop offset="0%" stopColor="#0ff" />
+                            <stop offset="100%" stopColor="#f0f" />
+                          </linearGradient>
+                        </defs>
+                      </svg>
+                      <div>
+                        <h2 className={cardTitleStyle}>Chatbot Training</h2>
+                        <p className="text-gray-500">
+                          Configure AI chatbot settings and responses
+                        </p>
+                      </div>
+                    </div>
+                  </Link>
                 </div>
-              </Link>
-            </div>
 
-            <TotalChatsCard />
-            <SatisfactionSummary />
-            <PeakUsage />
-            <GenderDistribution />
+                <TotalChatsCard />
+                <SatisfactionSummary />
+                <PeakUsage />
+                <GenderDistribution />
+              </div>
+            </div>
           </div>
-        </div>
 
-        <NewsBanner />
+          <NewsBanner />
+        </div>
       </main>
+
+      <WorldClock />
     </div>
   );
 }
