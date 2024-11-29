@@ -172,7 +172,7 @@ function ChatWindow() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    
+
     const hasRated = localStorage.getItem("hasRatedChat");
     if (hasRated) {
       setHasRatedBefore(true);
@@ -358,7 +358,7 @@ function ChatWindow() {
           {
             label: "OK",
             onClick: () => {
-              document.querySelector('.toast-container')?.remove();
+              document.getElementById('toast-container')?.remove();
             },
             variant: "primary",
           },
@@ -372,7 +372,7 @@ function ChatWindow() {
           {
             label: "OK",
             onClick: () => {
-              document.querySelector('.toast-container')?.remove();
+              document.getElementById('toast-container')?.remove();
             },
             variant: "danger",
           },
@@ -382,17 +382,18 @@ function ChatWindow() {
   };
 
   const sendMessageToParent = (message: string) => {
-    window.parent.postMessage(message, "*"); 
+    window.parent.postMessage(message, "*");
   };
 
 
   const handleToggleChat = () => {
-    sendMessageToParent(isOpen ? "close" : "open"); 
+    sendMessageToParent(isOpen ? "close" : "open");
     if (isOpen && hasSubmittedMobile) {
+      sendMessageToParent("open");
       setShowRatingModal(true);
-    } else {
-      setIsOpen(!isOpen);
     }
+
+    setIsOpen(!isOpen);
   };
 
   /*********************************************************************
@@ -407,7 +408,7 @@ function ChatWindow() {
       <ChatToggleButton isOpen={isOpen} onClick={handleToggleChat} />
 
       {isOpen && (
-        <div className="fixed inset-0 md:inset-auto bottom-24 md:right-0 w-full md:w-[430px] h-[100%] md:h-[700px] bg-gradient-to-b from-[#00BF63] to-white rounded-2xl shadow-xl border overflow-hidden flex flex-col z-50">
+        <div className={`fixed inset-auto md:inset-auto bottom-0 -right-0  ${screen.width < 450 ? "w-[350px]" : "w-full" } h-[100%] md:h-[700px] bg-gradient-to-b from-[#00BF63] to-white rounded-2xl shadow-xl border overflow-hidden flex flex-col z-50`}>
           <div className="chat-header">
             <div className="flex justify-between items-center px-4 py-2">
               <div className="w-16 h-16 md:w-20 md:h-20">
@@ -419,8 +420,8 @@ function ChatWindow() {
                   className="w-full h-full object-contain"
                 />
               </div>
-              <div 
-                className="text-white -mt-8 hover:underline cursor-pointer" 
+              <div
+                className="text-white -mt-8 hover:underline cursor-pointer"
                 onClick={handleToggleChat}
               >
                 <p>CLOSE</p>
