@@ -210,6 +210,32 @@ function ChatWindow() {
     }
   };
 
+  const sendPushNotification = async (message: string) => {
+    console.log('Attempting to send push notification...');
+    try {
+      const response = await fetch('/api/notify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message,
+          name: userDetails.name,
+          email: userDetails.email
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send notification');
+      }
+
+      console.log('Notification sent successfully');
+    } catch (error) {
+      console.error('Error sending notification:', error);
+    }
+  };
+
   const handleMobileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const mobile = userDetails.mobile;
@@ -233,6 +259,9 @@ function ChatWindow() {
           messages: arrayUnion(welcomeMessage),
           lastUpdated: new Date(),
         });
+
+        // Send notification when mobile is submitted (chat is ready to begin)
+        await sendPushNotification(`Mobile: ${mobile}`);
       }
 
       // Update UI
