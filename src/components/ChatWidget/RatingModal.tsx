@@ -26,7 +26,7 @@ export const RatingModal: React.FC<RatingModalProps> = ({
 
   if (isSubmitting) {
     return (
-      <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+      <div className="relative inset-0 flex items-center justify-center bg-black/50">
         <div className="bg-white p-8 rounded-lg shadow-xl flex flex-col items-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#00BF63]" />
           <p className="mt-4 text-gray-600">Submitting your feedback...</p>
@@ -36,8 +36,8 @@ export const RatingModal: React.FC<RatingModalProps> = ({
   }
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center bg-brand-green-dark/50">
-      <div className="bg-white p-6 rounded-xl w-[90%] max-w-md shadow-xl border-[2px] border-brand-green m-4">
+    <div className="relative inset-0 flex items-center justify-center bg-brand-green-dark/50">
+      <div className={`bg-white ${screen.width < 475 ? "p-2" : "p-6" } rounded-xl w-[90%] max-w-md shadow-xl border-[2px] border-brand-green m-4`}>
         <div className="flex justify-center mb-6">
           <Image
             src="/images/profile.png"

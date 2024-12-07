@@ -3,7 +3,7 @@
   container.id = 'chat-widget-container';
   container.style.position = 'fixed';
   container.style.bottom = '0px';
-  container.style.right = '20px';
+  container.style.right = screen.width < 425 ? "10px" : '20px';
   container.style.width = '400px';
   container.style.zIndex = '999999';
   document.body.appendChild(container);
