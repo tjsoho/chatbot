@@ -7,22 +7,24 @@ export async function POST(request: Request): Promise<Response> {
     const userKey = process.env.PUSHOVER_USER_KEY;
     const appToken = process.env.PUSHOVER_APP_TOKEN;
 
-    console.log('API Route Debug:', {
+    console.log('Vercel Environment Check:', {
       hasUserKey: !!userKey,
-      hasAppToken: !!appToken,
       userKeyLength: userKey?.length,
-      appTokenLength: appToken?.length
+      hasAppToken: !!appToken,
+      appTokenLength: appToken?.length,
+      nodeEnv: process.env.NODE_ENV,
+      vercelEnv: process.env.VERCEL_ENV
     });
 
     if (!userKey || !appToken) {
-      console.error('Missing Pushover credentials:', {
-        userKeyExists: !!userKey,
-        appTokenExists: !!appToken
-      });
       return new Response(
         JSON.stringify({ 
           error: 'Server configuration error',
-          details: 'Missing Pushover credentials'
+          details: 'Missing credentials',
+          debug: {
+            hasUserKey: !!userKey,
+            hasAppToken: !!appToken
+          }
         }), 
         { status: 500 }
       );
