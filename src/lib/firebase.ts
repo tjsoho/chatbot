@@ -1,7 +1,7 @@
-import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
-import { getStorage } from 'firebase/storage';
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -17,4 +17,9 @@ export const db = getFirestore(app);
 export const auth = getAuth(app);
 export const storage = getStorage(app);
 
-console.log('Storage initialized:', storage);
+// Debug: Check if Firebase config is properly loaded
+console.log("Firebase config loaded:", {
+  apiKey: firebaseConfig.apiKey ? "✅ Set" : "❌ Missing",
+  authDomain: firebaseConfig.authDomain ? "✅ Set" : "❌ Missing",
+  projectId: firebaseConfig.projectId ? "✅ Set" : "❌ Missing",
+});

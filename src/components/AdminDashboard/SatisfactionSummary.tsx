@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { collection, query, where, getDocs } from "firebase/firestore";
-import { db } from "@/firebase/config";
+import { db } from "@/lib/firebase";
 import { FaStar } from "react-icons/fa";
 
 type Rating = 1 | 2 | 3 | 4 | 5;
@@ -77,28 +77,28 @@ export default function SatisfactionSummary() {
         </div>
       ) : (
         <>
-          
-            <div className="flex items-center mb-3">
-              {[...Array(5)].map((_, index) => (
-                <FaStar
-                  key={index}
-                  className={
-                    index < Math.round(stats.averageRating)
-                      ? "text-yellow-400" // Keeping stars gold
-                      : "text-gray-700" // Darker gray for empty stars
-                  }
-                  size={24}
-                />
-              ))}
-              
-              <span className={`ml-2 text-2xl font-bold ${gradientTextStyle}`}>
-                {stats.averageRating.toFixed(1)}
-              </span>
-            </div>
-              <div className="text-sm text-gray-400 -mt-8">
-                Based on {stats.totalRatings} ratings
-              </div>
-          
+
+          <div className="flex items-center mb-3">
+            {[...Array(5)].map((_, index) => (
+              <FaStar
+                key={index}
+                className={
+                  index < Math.round(stats.averageRating)
+                    ? "text-yellow-400" // Keeping stars gold
+                    : "text-gray-700" // Darker gray for empty stars
+                }
+                size={24}
+              />
+            ))}
+
+            <span className={`ml-2 text-2xl font-bold ${gradientTextStyle}`}>
+              {stats.averageRating.toFixed(1)}
+            </span>
+          </div>
+          <div className="text-sm text-gray-400 -mt-8">
+            Based on {stats.totalRatings} ratings
+          </div>
+
 
           {/* Rating Distribution Bars */}
           <div className="mt-4 space-y-2">
@@ -109,12 +109,11 @@ export default function SatisfactionSummary() {
                   <div
                     className="h-full bg-yellow-400" // Keeping bars gold
                     style={{
-                      width: `${
-                        stats.totalRatings > 0
+                      width: `${stats.totalRatings > 0
                           ? (stats.distribution[rating] / stats.totalRatings) *
-                            100
+                          100
                           : 0
-                      }%`,
+                        }%`,
                     }}
                   ></div>
                 </div>

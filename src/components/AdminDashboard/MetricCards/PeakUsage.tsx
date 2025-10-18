@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { collection, query, getDocs } from 'firebase/firestore';
-import { db } from '@/firebase/config';
+import { db } from '@/lib/firebase';
 import { Clock } from 'lucide-react';
 
 interface UsageData {
@@ -36,7 +36,7 @@ export default function PeakUsage() {
       try {
         const q = query(collection(db, "chats"));
         const querySnapshot = await getDocs(q);
-        
+
         const dayCount: Record<string, number> = {};
         const hourCount: Record<number, number> = {};
 
@@ -121,7 +121,7 @@ export default function PeakUsage() {
               {usageData.busiestDay}
             </div>
           </div>
-          
+
           <div>
             <div className="text-sm text-gray-500 mb-1">Peak Hours</div>
             <div className={`text-2xl font-bold ${gradientTextStyle}`}>
@@ -136,7 +136,7 @@ export default function PeakUsage() {
               {DAYS.map((day) => (
                 <div key={day} className="text-center">
                   <div className="h-16 relative">
-                    <div 
+                    <div
                       className="absolute bottom-0 w-full bg-blue-200 rounded-t"
                       style={{
                         height: `${(usageData.dayCount[day] / Math.max(...Object.values(usageData.dayCount))) * 100}%`

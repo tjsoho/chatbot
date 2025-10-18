@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { collection, query, getDocs } from 'firebase/firestore';
-import { db } from '@/firebase/config';
+import { db } from '@/lib/firebase';
 import { Users } from 'lucide-react';
 
 // Extensive name lists
@@ -149,7 +149,7 @@ export default function GenderDistribution() {
       'mike': 'male',
       'mikey': 'male',
       'chris': 'unknown', // Changed to 'unknown' since it can be both male/female
-      
+
       'beth': 'female',
       'liz': 'female',
       'lizzy': 'female',
@@ -198,12 +198,12 @@ export default function GenderDistribution() {
     if (nicknames[firstName]) return nicknames[firstName];
 
     // Handle special cases for names ending in common suffixes
-    if (firstName.endsWith('ette') || 
-        firstName.endsWith('elle') || 
-        firstName.endsWith('ella') || 
-        firstName.endsWith('ina') || 
-        firstName.endsWith('lyn') ||
-        firstName.endsWith('leigh')) {
+    if (firstName.endsWith('ette') ||
+      firstName.endsWith('elle') ||
+      firstName.endsWith('ella') ||
+      firstName.endsWith('ina') ||
+      firstName.endsWith('lyn') ||
+      firstName.endsWith('leigh')) {
       return 'female';
     }
 
@@ -215,7 +215,7 @@ export default function GenderDistribution() {
       try {
         const q = query(collection(db, "chats"));
         const querySnapshot = await getDocs(q);
-        
+
         const distribution = {
           male: 0,
           female: 0,
@@ -281,7 +281,7 @@ export default function GenderDistribution() {
                 <span className={gradientTextStyle}>{calculatePercentage(stats.male)}</span>
               </div>
               <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
-                <div 
+                <div
                   className="h-full bg-gradient-to-r from-[#0ff] to-[#f0f]"
                   style={{ width: calculatePercentage(stats.male) }}
                 ></div>
@@ -294,7 +294,7 @@ export default function GenderDistribution() {
                 <span className={gradientTextStyle}>{calculatePercentage(stats.female)}</span>
               </div>
               <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
-                <div 
+                <div
                   className="h-full bg-gradient-to-r from-[#0ff] to-[#f0f]"
                   style={{ width: calculatePercentage(stats.female) }}
                 ></div>
@@ -307,7 +307,7 @@ export default function GenderDistribution() {
                 <span className={gradientTextStyle}>{calculatePercentage(stats.unknown)}</span>
               </div>
               <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
-                <div 
+                <div
                   className="h-full bg-gradient-to-r from-[#0ff] to-[#f0f]"
                   style={{ width: calculatePercentage(stats.unknown) }}
                 ></div>

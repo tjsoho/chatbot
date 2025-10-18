@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { collection, query, getDocs } from 'firebase/firestore';
-import { db } from '@/firebase/config';
+import { db } from '@/lib/firebase';
 import { MessagesSquare } from 'lucide-react';
 
 export default function TotalChatsCard() {
@@ -47,7 +47,7 @@ export default function TotalChatsCard() {
     <div className={cardContainerStyle}>
       <div className="flex flex-col items-center text-center space-y-2 h-full justify-center">
         {iconGradientDef}
-        
+
         {loading ? (
           <div className="animate-pulse">
             <div className="h-16 bg-gray-800 rounded w-32"></div>

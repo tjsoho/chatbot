@@ -62,7 +62,7 @@ export default function BotConfig() {
               </div>
             </div>
 
-            <div className="bg-zinc-900 rounded-[20px] shadow-[0_0_10px_#0ff,0_0_20px_#f0f] group hover:bg-black/90 transition-all">
+            <div className="bg-zinc-900 rounded-[20px] shadow-[0_0_10px_#0ff,0_0_20px_#f0f] group hover:bg-black/90 transition-all p-8">
               <BotConfiguration />
             </div>
           </div>

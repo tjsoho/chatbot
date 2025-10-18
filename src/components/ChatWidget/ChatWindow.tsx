@@ -12,7 +12,7 @@ import {
   updateDoc,
   arrayUnion,
 } from "firebase/firestore";
-import { db } from "../../firebase/config";
+import { db } from "../../lib/firebase";
 import { BotConfig } from "../../types/botConfig";
 import { InitialForm } from "./InitialForm";
 import { MobileForm } from "./MobileForm";
@@ -436,8 +436,10 @@ function ChatWindow() {
     <>
       <ChatToggleButton isOpen={isOpen} onClick={handleToggleChat} />
 
+      {/* CHAT WINDOW - remove fixed to see chat window in this current app. But fixed is needed to show the chat window on extrernal apps */}
+
       {isOpen && (
-        <div className={`fixed inset-auto md:inset-auto bottom-0 -right-0  ${screen.width < 450 ? "w-[350px]" : "w-full" } h-[100%] md:h-[700px] bg-gradient-to-b from-[#00BF63] to-white rounded-2xl shadow-xl border overflow-hidden flex flex-col z-50`}>
+        <div className={`inset-auto md:inset-auto bottom-0 -right-0  ${screen.width < 450 ? "w-[350px]" : "w-full"} h-[100%] md:h-[700px] bg-gradient-to-b from-[#00BF63] to-white rounded-2xl shadow-xl border overflow-hidden flex flex-col z-50`}>
           <div className="chat-header">
             <div className="flex justify-between items-center px-4 py-2">
               <div className="w-16 h-16 md:w-20 md:h-20">

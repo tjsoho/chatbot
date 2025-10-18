@@ -6,13 +6,17 @@ import {
   Star,
   Users,
   Clock,
+  LogOut,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 const Sidebar = () => {
   const pathname = usePathname();
+  const router = useRouter();
   const [isWideScreen, setIsWideScreen] = useState(false);
 
   // Custom hook to handle screen size
@@ -33,6 +37,17 @@ const Sidebar = () => {
     // Cleanup
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  // Logout function
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      localStorage.removeItem("adminAuth");
+      router.push("/admin");
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
 
   // Style variables
   const gradientTextStyle =
@@ -78,59 +93,105 @@ const Sidebar = () => {
         </defs>
       </svg>
 
-      <div className="flex flex-col items-center py-8 space-y-8">
-        {navItems.map((item) => {
-          const isActive = pathname === item.href;
-          const Icon = item.icon;
+      <div className="flex flex-col items-center py-8 space-y-8 h-full">
+        <div className="flex flex-col space-y-8">
+          {navItems.map((item) => {
+            const isActive = pathname === item.href;
+            const Icon = item.icon;
 
-          return (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={`
-                group relative flex items-center
-                ${isWideScreen ? "w-[80%]" : "w-12"}
-                ${isWideScreen ? "px-4" : "px-3"} py-3
-                rounded-full
-                transition-all duration-300
-                ${
-                  isActive
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={`
+                  group relative flex items-center
+                  ${isWideScreen ? "w-[80%]" : "w-12"}
+                  ${isWideScreen ? "px-4" : "px-3"} py-3
+                  rounded-full
+                  transition-all duration-300
+                  ${isActive
                     ? "bg-black shadow-[0_0_10px_#0ff,0_0_20px_#f0f]"
                     : "hover:bg-black/50"
-                }
-              `}
-            >
-              <Icon {...iconStyle} />
-              <span
-                className={`
-                ${gradientTextStyle}
-                ml-3 font-medium
-                ${isWideScreen ? "block" : "hidden"}
-                whitespace-nowrap
-              `}
+                  }
+                `}
               >
-                {item.name}
-              </span>
+                <Icon {...iconStyle} />
+                <span
+                  className={`
+                  ${gradientTextStyle}
+                  ml-3 font-medium
+                  ${isWideScreen ? "block" : "hidden"}
+                  whitespace-nowrap
+                `}
+                >
+                  {item.name}
+                </span>
 
-              {/* Tooltip for collapsed state */}
-              <div
-                className={`
-                absolute left-full ml-2
-                px-2 py-1
-                bg-black rounded
-                text-gray-300 text-sm
-                opacity-0 invisible
-                group-hover:opacity-100 group-hover:visible
-                transition-all duration-200
-                ${isWideScreen ? "hidden" : "block"}
-                whitespace-nowrap
-              `}
-              >
-                {item.name}
-              </div>
-            </Link>
-          );
-        })}
+                {/* Tooltip for collapsed state */}
+                <div
+                  className={`
+                  absolute left-full ml-2
+                  px-2 py-1
+                  bg-black rounded
+                  text-gray-300 text-sm
+                  opacity-0 invisible
+                  group-hover:opacity-100 group-hover:visible
+                  transition-all duration-200
+                  ${isWideScreen ? "hidden" : "block"}
+                  whitespace-nowrap
+                `}
+                >
+                  {item.name}
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Logout Button - positioned at bottom */}
+        <div className="mt-auto">
+          <button
+            onClick={handleLogout}
+            className={`
+              group relative flex items-center
+              ${isWideScreen ? "w-[80%]" : "w-12"}
+              ${isWideScreen ? "px-4" : "px-3"} py-3
+              rounded-full
+              transition-all duration-300
+              hover:bg-red-900/50
+              text-red-400 hover:text-red-300
+            `}
+          >
+            <LogOut {...iconStyle} />
+            <span
+              className={`
+              ${gradientTextStyle}
+              ml-3 font-medium
+              ${isWideScreen ? "block" : "hidden"}
+              whitespace-nowrap
+            `}
+            >
+              Logout
+            </span>
+
+            {/* Tooltip for collapsed state */}
+            <div
+              className={`
+              absolute left-full ml-2
+              px-2 py-1
+              bg-red-900 rounded
+              text-red-300 text-sm
+              opacity-0 invisible
+              group-hover:opacity-100 group-hover:visible
+              transition-all duration-200
+              ${isWideScreen ? "hidden" : "block"}
+              whitespace-nowrap
+            `}
+            >
+              Logout
+            </div>
+          </button>
+        </div>
       </div>
     </aside>
   );

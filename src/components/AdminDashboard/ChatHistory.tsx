@@ -12,7 +12,7 @@ import {
   deleteDoc,
   doc,
 } from "firebase/firestore";
-import { db } from "@/firebase/config";
+import { db } from "@/lib/firebase";
 import { Timestamp } from "firebase/firestore";
 import toast from "react-hot-toast";
 import { XCircle } from "lucide-react"; // or use any other icon library you prefer
@@ -102,10 +102,10 @@ export default function ChatHistory() {
 
   // Update the type guard to use unknown instead of any
   function isFirebaseTimestamp(timestamp: unknown): timestamp is Timestamp {
-    return timestamp !== null && 
-           typeof timestamp === 'object' && 
-           'toDate' in (timestamp as TimestampLike) &&
-           typeof (timestamp as TimestampLike).toDate === 'function';
+    return timestamp !== null &&
+      typeof timestamp === 'object' &&
+      'toDate' in (timestamp as TimestampLike) &&
+      typeof (timestamp as TimestampLike).toDate === 'function';
   }
 
   const formatTimestamp = (timestamp: Timestamp | string | Date | null) => {
@@ -253,9 +253,8 @@ export default function ChatHistory() {
           {chats.map((chat) => (
             <div
               key={chat.id}
-              className={`p-4 cursor-pointer hover:bg-gray-50 transition-colors relative ${
-                selectedChat?.id === chat.id ? "bg-blue-50" : ""
-              }`}
+              className={`p-4 cursor-pointer hover:bg-gray-50 transition-colors relative ${selectedChat?.id === chat.id ? "bg-blue-50" : ""
+                }`}
               onClick={() => setSelectedChat(chat)}
             >
               <div className="absolute top-2 right-2">
@@ -353,9 +352,8 @@ export default function ChatHistory() {
               {selectedChat.messages.map((message, index) => (
                 <div
                   key={index}
-                  className={`p-3 rounded-lg max-w-[80%] ${
-                    message.isUser ? "bg-blue-100 ml-auto" : "bg-gray-100"
-                  }`}
+                  className={`p-3 rounded-lg max-w-[80%] ${message.isUser ? "bg-blue-100 ml-auto" : "bg-gray-100"
+                    }`}
                 >
                   <p className="text-xs text-black mt-1">
                     {message.isUser ? "User" : "AI"}

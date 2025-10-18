@@ -18,7 +18,7 @@ export default function ChatsPage() {
 
 
   return (
-    <div className="flex h-screen bg-zinc-900">
+    <div className="flex  bg-zinc-900">
       <Sidebar />
       <main className="flex-1 ml-20 2xl:ml-[10%] xl:ml-24 p-8">
         <AdminAuthCheck>

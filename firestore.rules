@@ -1,0 +1,29 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow read/write access to chats collection for authenticated users
+    match /chats/{document} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Allow read/write access to ratings collection for authenticated users
+    match /ratings/{document} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Allow read/write access to users collection for authenticated users
+    match /users/{document} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Allow read/write access to botConfig collection for authenticated users
+    match /botConfig/{document} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Default rule: deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

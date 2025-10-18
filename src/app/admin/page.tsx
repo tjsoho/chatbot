@@ -4,10 +4,11 @@
                             IMPORTS
 *********************************************************************/
 import { useEffect, useState } from "react";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import AdminLogin from "@/components/AdminDashboard/AdminLogin";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import SatisfactionSummary from "@/components/AdminDashboard/SatisfactionSummary";
 import TotalChatsCard from "@/components/AdminDashboard/TotalChatsCard";
 import PeakUsage from "@/components/AdminDashboard/MetricCards/PeakUsage";
@@ -32,6 +33,7 @@ interface AdminUser {
 export default function AdminDashboard() {
   const [user, setUser] = useState<AdminUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   // Style variables
   const gradientTextStyle =
@@ -66,6 +68,17 @@ export default function AdminDashboard() {
     return () => unsubscribe();
   }, []);
 
+  // Logout function
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      localStorage.removeItem("adminAuth");
+      router.push("/admin");
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
+
   if (loading) {
     return <LoadingSpinner />;
   }
@@ -80,11 +93,24 @@ export default function AdminDashboard() {
 
       <main className="flex-1 ml-20 2xl:ml-[10%] xl:ml-24 mr-20 2xl:mr-[10%] xl:mr-24 p-8">
         <div className="h-full flex flex-col">
-          <div className="mb-6 flex space-x-8 items-baseline">
-            <h1 className={`text-5xl font-bold ${gradientTextStyle}`}>
-              Admin Dashboard
-            </h1>
-            <p className="text-gray-500">Welcome, {user.email}</p>
+          <div className="mb-6 flex justify-between items-baseline">
+            <div className="flex space-x-8 items-baseline">
+              <h1 className={`text-5xl font-bold ${gradientTextStyle}`}>
+                Admin Dashboard
+              </h1>
+              <p className="text-gray-500">Welcome, {user.email}</p>
+            </div>
+
+            {/* Logout Button */}
+            <button
+              onClick={handleLogout}
+              className="flex items-center space-x-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors duration-200"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              <span>Logout</span>
+            </button>
           </div>
 
           <div className="flex-1 flex items-center 2xl:justify-center">
