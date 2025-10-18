@@ -49,12 +49,14 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      console.log("Auth state changed:", firebaseUser?.email);
       if (firebaseUser) {
         const isAdmin =
           typeof window !== "undefined"
             ? localStorage.getItem("adminAuth") === "true"
             : false;
 
+        console.log("User is admin:", isAdmin);
         setUser({
           email: firebaseUser.email,
           isAdmin: isAdmin,
@@ -84,11 +86,35 @@ export default function AdminDashboard() {
   }
 
   if (!user || !user.isAdmin) {
-    return <AdminLogin onLogin={() => setLoading(true)} />;
+    return <AdminLogin onLogin={async () => {
+      // Force a re-check of auth state
+      setLoading(true);
+      console.log("onLogin called, checking auth state...");
+
+      // Wait a moment for Firebase to update
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Manually check auth state
+      const currentUser = auth.currentUser;
+      const isAdmin = localStorage.getItem("adminAuth") === "true";
+
+      console.log("Manual auth check:", { currentUser: currentUser?.email, isAdmin });
+
+      if (currentUser && isAdmin) {
+        setUser({
+          email: currentUser.email,
+          isAdmin: true,
+        });
+        setLoading(false);
+      } else {
+        // If manual check fails, let the auth listener handle it
+        console.log("Manual check failed, letting auth listener handle it");
+      }
+    }} />;
   }
 
   return (
-    <div className="flex h-screen bg-zinc-900">
+    <div className="flex min-h-screen bg-zinc-900 pb-8">
       <Sidebar />
 
       <main className="flex-1 ml-20 2xl:ml-[10%] xl:ml-24 mr-20 2xl:mr-[10%] xl:mr-24 p-8">

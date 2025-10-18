@@ -48,7 +48,6 @@ function NewsBannerContent() {
     isLoading: true
   });
 
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     // Set initial demo data immediately
@@ -90,7 +89,7 @@ function NewsBannerContent() {
 
         // Initialize with default values
         let totalChats = 0;
-        let distribution: Record<number, number> = {};
+        const distribution: Record<number, number> = {};
         let totalRatings = 0;
         let busiestDay = 'Monday';
         let busiestTimeSlot = '9AM - 11AM';
@@ -205,7 +204,6 @@ function NewsBannerContent() {
 
     const unsubscribe = auth.onAuthStateChanged((user) => {
       const adminAuth = localStorage.getItem('adminAuth') === 'true';
-      setIsAuthenticated(!!user && adminAuth);
 
       if (user && adminAuth) {
         fetchStats();
